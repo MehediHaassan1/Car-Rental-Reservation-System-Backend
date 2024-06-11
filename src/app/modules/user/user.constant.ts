@@ -1,0 +1,1 @@
+export const TUserRole = ['user', 'admin']
