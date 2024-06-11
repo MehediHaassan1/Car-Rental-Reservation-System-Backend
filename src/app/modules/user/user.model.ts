@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose';
 import { TUser, TUserModel } from './user.interface';
 import { TUserRole } from './user.constant';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const userSchema = new Schema<TUser, TUserModel>({
     name: {
@@ -22,7 +24,8 @@ const userSchema = new Schema<TUser, TUserModel>({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: 0
     },
     phone: {
         type: String,
@@ -40,9 +43,21 @@ const userSchema = new Schema<TUser, TUserModel>({
     timestamps: true
 });
 
+// hashed the password field
+userSchema.pre('save', async function (next) {
+    const user = this;
+
+    user.password = await bcrypt.hash(
+        user.password,
+        Number(config.bcrypt_salt_round)
+    )
+
+    next();
+})
+
 
 userSchema.statics.isUserExists = async function (email) {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     return user;
 }
 
