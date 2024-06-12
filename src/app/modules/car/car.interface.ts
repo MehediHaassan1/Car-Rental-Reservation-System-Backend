@@ -1,17 +1,17 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
-export interface TCar  {
+export interface TCar {
     name: string;
     description: string;
     color: string;
     isElectric: boolean;
     features: string[];
     pricePerHour: number;
-    status: 'available' | 'booked';
+    status: 'available' | 'unavailable';
     isDeleted: boolean;
 }
 
 
 export interface CarModel extends Model<TCar> {
-    isCarExists(id: string): TCar
+    isCarExists(id: Types.ObjectId): TCar
 }

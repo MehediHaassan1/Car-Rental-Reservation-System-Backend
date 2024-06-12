@@ -1,1 +1,1 @@
-export const TCarStatus = ['available', 'booked'];
+export const TCarStatus = ['available', 'unavailable'];

@@ -17,10 +17,12 @@ const authHandler = (...userRoles: TUserRole[]) => {
         }
 
         // verify the jwt
-        const { user, role } = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
+        const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
 
+        const { email, role } = decoded;
+        
         // check the user exists or not
-        const existingUser = await User.isUserExists(user);
+        const existingUser = await User.isUserExists(email);
         if (!existingUser) {
             throw new AppError(httpStatus.FORBIDDEN, 'Forbidden access!')
         }
@@ -29,6 +31,8 @@ const authHandler = (...userRoles: TUserRole[]) => {
         if (userRoles && !userRoles.includes(role)) {
             throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!')
         }
+
+        req.user = decoded
 
         next();
     })

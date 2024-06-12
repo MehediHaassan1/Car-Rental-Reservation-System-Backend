@@ -52,7 +52,7 @@ userSchema.pre('save', async function (next) {
 })
 
 
-// remove the password field after create
+// remove the password field in the response
 userSchema.set('toJSON', {
     transform: (doc, ret, options) => {
         delete ret.password;

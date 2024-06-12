@@ -3,7 +3,7 @@ import AppError from "../../errors/AppError";
 import { TUser } from "../user/user.interface";
 import User from "../user/user.model";
 import { TSignIn } from "./auth.interface";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from "../../config";
 import { createToken } from "./auth.utils";
 
@@ -31,12 +31,6 @@ const singInUser = async (payload: TSignIn) => {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
     }
 
-    // check the user is deleted or not!
-    const isDeleted = user?.isDeleted;
-    if (isDeleted) {
-        throw new AppError(httpStatus.FORBIDDEN, 'User is deleted!')
-    }
-
     // check the password is matched or not!
     if (! await User.isPasswordMatched(password, user?.password)) {
         throw new AppError(httpStatus.FORBIDDEN, 'Wrong password!')
@@ -44,8 +38,8 @@ const singInUser = async (payload: TSignIn) => {
 
     // create token
     const jwtPayload = {
-        user: user.email,
-        role: user.role
+        email: user.email,
+        role: user.role,
     }
     const accessToken = createToken(
         jwtPayload,
