@@ -20,7 +20,17 @@ const carSchema = new Schema<TCar>({
     timestamps: true
 });
 
+// find all cars those are not deleted
+carSchema.pre('find', async function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next();
+})
 
+// find single car that is not deleted
+carSchema.pre('findOne', async function (next) {
+    this.findOne({ isDeleted: { $ne: true } })
+    next();
+})
 
 
 const Car = model<TCar>('Car', carSchema);
