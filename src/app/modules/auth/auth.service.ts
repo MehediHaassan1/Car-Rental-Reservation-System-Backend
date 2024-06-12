@@ -5,6 +5,7 @@ import User from "../user/user.model";
 import { TSignIn } from "./auth.interface";
 import jwt from 'jsonwebtoken';
 import config from "../../config";
+import { createToken } from "./auth.utils";
 
 const signUpUser = async (payload: TUser) => {
 
@@ -46,16 +47,22 @@ const singInUser = async (payload: TSignIn) => {
         user: user.email,
         role: user.role
     }
-    const accessToken = jwt.sign(
+    const accessToken = createToken(
         jwtPayload,
         config.jwt_access_secret as string,
-        { expiresIn: config.jwt_access_secret_expires_in as string }
-    );
+        config.jwt_access_secret_expires_in as string
+    )
 
+    const refreshToken = createToken(
+        jwtPayload,
+        config.jwt_refresh_secret as string,
+        config.jwt_refresh_secret_expires_in as string
+    )
 
     return {
         user,
-        accessToken
+        accessToken,
+        refreshToken
     }
 }
 
