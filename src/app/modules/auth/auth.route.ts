@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthControllers } from "./auth.controller";
-import validateRequest from "../../middlewares/validateRequest";
+import validateRequestHandler from "../../middlewares/validateRequestHandler";
 import { validateUser } from "../user/user.validation";
 import { validateAuth } from "./auth.validation";
 
@@ -9,13 +9,13 @@ const router = Router();
 
 router.post(
     '/signup',
-    validateRequest(validateUser.createUserValidationSchema),
+    validateRequestHandler(validateUser.createUserValidationSchema),
     AuthControllers.signUp
 );
 
 router.post(
     '/signin',
-    validateRequest(validateAuth.signInValidationSchema),
+    validateRequestHandler(validateAuth.signInValidationSchema),
     AuthControllers.signIn
 )
 

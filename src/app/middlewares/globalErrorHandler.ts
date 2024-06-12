@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-const globalErrorHandlers = (
+const globalErrorHandler = (
     error: any,
     req: Request,
     res: Response,
@@ -18,4 +18,4 @@ const globalErrorHandlers = (
 }
 
 
-export default globalErrorHandlers;
+export default globalErrorHandler;

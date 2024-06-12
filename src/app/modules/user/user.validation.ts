@@ -9,7 +9,6 @@ const createUserValidationSchema = z.object({
         password: z.string().nonempty("Password is required"),
         phone: z.string().nonempty("Phone number is required"),
         address: z.string().nonempty("Address is required"),
-        isDeleted: z.boolean().default(false)
     })
 });
 
