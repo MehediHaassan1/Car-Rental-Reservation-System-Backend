@@ -1,4 +1,3 @@
-// car.interface.ts
 import { z } from 'zod';
 import { TCarStatus } from './car.constant';
 
