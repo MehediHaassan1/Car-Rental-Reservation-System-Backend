@@ -13,10 +13,22 @@ const bookACar = catchAsync(async (req, res) => {
         message: "Car booked successfully!",
         data: result
     })
-    // console.log(req.body);
+})
+
+
+const getAllBookings = catchAsync(async (req, res) => {
+    const query = req.query;
+    const result = await BookingServices.getAllBookingsFromDB(query);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Bookings retrieved successfully!",
+        data: result
+    })
 })
 
 
 export const BookingControllers = {
-    bookACar
+    bookACar,
+    getAllBookings
 }

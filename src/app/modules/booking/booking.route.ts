@@ -15,4 +15,12 @@ router.post(
 )
 
 
+// get All Bookings
+router.get(
+    '/',
+    authHandler(T_User_Roles.ADMIN),
+    BookingControllers.getAllBookings
+)
+
+
 export const BookingRoutes = router;

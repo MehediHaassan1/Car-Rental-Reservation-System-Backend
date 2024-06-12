@@ -60,4 +60,26 @@ const bookACar = async (user: JwtPayload, payload: TBooking) => {
 }
 
 
-export const BookingServices = { bookACar }
+const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
+    const { carId, date, isBooked } = query; // Extract query parameters from the request
+    const filter: any = {};
+
+    // Dynamically build the filter object based on query parameters
+    if (carId) {
+        filter.car = carId;
+    }
+    if (date) {
+        filter.date = date as string;
+    }
+    if (isBooked) {
+        filter.isBooked = isBooked;
+    }
+
+    const result = await Booking.find(filter).populate('car').populate('user');
+    return result;
+}
+
+export const BookingServices = {
+    bookACar,
+    getAllBookingsFromDB
+}
