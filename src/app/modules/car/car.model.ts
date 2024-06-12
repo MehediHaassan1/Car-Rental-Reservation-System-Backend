@@ -1,8 +1,10 @@
 import { Schema, model } from "mongoose";
-import { TCar } from "./car.interface";
+import { CarModel, TCar } from "./car.interface";
 import { TCarStatus } from "./car.constant";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
-const carSchema = new Schema<TCar>({
+const carSchema = new Schema<TCar, CarModel>({
     name: { type: String, required: true },
     description: { type: String, required: true },
     color: { type: String, required: true },
@@ -32,7 +34,13 @@ carSchema.pre('findOne', async function (next) {
     next();
 })
 
+// find the car exists or not
+carSchema.statics.isCarExists = async function (id: string) {
+    const car = await Car.findById(id);
+    return car;
+}
 
-const Car = model<TCar>('Car', carSchema);
+
+const Car = model<TCar, CarModel>('Car', carSchema);
 
 export default Car;

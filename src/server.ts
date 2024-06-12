@@ -10,7 +10,7 @@ async function main() {
             console.log(`Car is running fast on path ${config.port}`)
         })
     } catch (err: any) {
-        throw new Error(err)
+        throw new Error(err.message)
     }
 }
 

@@ -25,4 +25,21 @@ router.get(
     CarControllers.getSingleCar
 )
 
+
+// update car info
+router.put(
+    '/:id',
+    authHandler(T_User_Roles.ADMIN),
+    validateRequestHandler(validateCar.updateCarSchema),
+    CarControllers.updateCar
+)
+
+
+// Delete car
+router.delete(
+    '/:id',
+    authHandler(T_User_Roles.ADMIN),
+    CarControllers.deleteCar
+)
+
 export const CarRoutes = router;
