@@ -56,9 +56,25 @@ userSchema.pre('save', async function (next) {
 })
 
 
+// remove the password field after create
+userSchema.set('toJSON', {
+    transform: (doc, ret, options) => {
+        delete ret.password;
+        return ret;
+    }
+});
+
+
 userSchema.statics.isUserExists = async function (email) {
     const user = await User.findOne({ email }).select('+password');
     return user;
+}
+
+userSchema.statics.isPasswordMatched = async function (
+    plainTextPassword: string,
+    hashedPassword: string
+) {
+    return await bcrypt.compare(plainTextPassword, hashedPassword);
 }
 
 
