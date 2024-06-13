@@ -13,5 +13,5 @@ export interface TCar {
 
 
 export interface CarModel extends Model<TCar> {
-    isCarExists(id: Types.ObjectId): TCar
+    isCarExists(id: string): Promise<TCar>
 }

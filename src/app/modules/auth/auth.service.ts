@@ -32,14 +32,14 @@ const singInUser = async (payload: TSignIn) => {
     }
 
     // check the password is matched or not!
-    if (! await User.isPasswordMatched(password, user?.password)) {
+    if (! await User.isPasswordMatched(password, user?.password as string)) {
         throw new AppError(httpStatus.FORBIDDEN, 'Wrong password!')
     }
 
     // create token
     const jwtPayload = {
-        email: user.email,
-        role: user.role,
+        email: user.email as string,
+        role: user.role as string,
     }
     const accessToken = createToken(
         jwtPayload,

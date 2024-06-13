@@ -7,7 +7,7 @@ import mongoose, { Types } from "mongoose"
 import Car from "../car/car.model"
 import Booking from "./booking.model"
 
-const bookACar = async (user: JwtPayload, payload: TBooking) => {
+const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
     // check the user is exists or not
     const userData = await User.isUserExists(user?.email)
     if (!userData) {
@@ -18,7 +18,7 @@ const bookACar = async (user: JwtPayload, payload: TBooking) => {
     payload.user = userData?._id as Types.ObjectId;
 
     // check the car exists or not
-    const car = await Car.isCarExists(payload.car)
+    const car = await Car.isCarExists(payload.car as string)
     if (!car) {
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
     }

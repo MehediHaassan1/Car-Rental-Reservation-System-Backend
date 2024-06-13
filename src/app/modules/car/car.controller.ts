@@ -63,10 +63,23 @@ const deleteCar = catchAsync(async (req, res) => {
 })
 
 
+const returnABookedCar = catchAsync(async (req, res) => {
+    const user = req.user;
+    const data = req.body;
+    const result = await CarServices.returnABookedCar(user, data);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Car booked successfully!",
+        data: result
+    });
+})
+
 export const CarControllers = {
     createCar,
     getAllCars,
     getSingleCar,
     updateCar,
-    deleteCar
+    deleteCar,
+    returnABookedCar
 }

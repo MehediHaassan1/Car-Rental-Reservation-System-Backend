@@ -16,6 +16,7 @@ const authHandler = (...userRoles: TUserRole[]) => {
             throw new AppError(httpStatus.UNAUTHORIZED, 'Authentication failed!')
         }
 
+        
         // verify the jwt
         const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
 

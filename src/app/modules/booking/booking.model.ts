@@ -4,7 +4,7 @@ import { isBookedStatus } from './booking.constant';
 
 const bookingSchema = new Schema<TBooking>({
     date: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User', },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     car: { type: Schema.Types.ObjectId, ref: 'Car', required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, default: null },
