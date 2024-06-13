@@ -61,10 +61,9 @@ const bookACar = async (user: JwtPayload, payload: TBooking) => {
 
 
 const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
-    const { carId, date, isBooked } = query; // Extract query parameters from the request
+    const { carId, date, isBooked } = query;
     const filter: any = {};
 
-    // Dynamically build the filter object based on query parameters
     if (carId) {
         filter.car = carId;
     }
@@ -79,7 +78,24 @@ const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
     return result;
 }
 
+
+const getSpecificUsersBookingsFromDB = async (user: JwtPayload) => {
+    // check the user is exists or not
+    const userData = await User.isUserExists(user?.email)
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    // get all bookings from the Bookings
+    const result = await Booking.find({ user: userData?._id })
+        .populate('car')
+        .populate('user');
+
+    return result;
+}
+
 export const BookingServices = {
     bookACar,
-    getAllBookingsFromDB
+    getAllBookingsFromDB,
+    getSpecificUsersBookingsFromDB
 }

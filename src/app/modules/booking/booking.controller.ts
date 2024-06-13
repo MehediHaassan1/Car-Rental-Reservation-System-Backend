@@ -28,7 +28,20 @@ const getAllBookings = catchAsync(async (req, res) => {
 })
 
 
+const getSpecificUsersBookings = catchAsync(async (req, res) => {
+    const user = req.user;
+    const result = await BookingServices.getSpecificUsersBookingsFromDB(user)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "My Bookings retrieved successfully!",
+        data: result
+    })
+})
+
+
 export const BookingControllers = {
     bookACar,
-    getAllBookings
+    getAllBookings,
+    getSpecificUsersBookings
 }

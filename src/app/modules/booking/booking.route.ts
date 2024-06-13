@@ -23,4 +23,12 @@ router.get(
 )
 
 
+// get Specific Users Bookings
+router.get(
+    '/my-bookings',
+    authHandler(T_User_Roles.USER),
+    BookingControllers.getSpecificUsersBookings
+);
+
+
 export const BookingRoutes = router;
