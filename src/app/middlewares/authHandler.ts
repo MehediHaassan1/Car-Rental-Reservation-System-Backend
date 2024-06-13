@@ -16,12 +16,12 @@ const authHandler = (...userRoles: TUserRole[]) => {
             throw new AppError(httpStatus.UNAUTHORIZED, 'Authentication failed!')
         }
 
-        
+
         // verify the jwt
         const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
 
         const { email, role } = decoded;
-        
+
         // check the user exists or not
         const existingUser = await User.isUserExists(email);
         if (!existingUser) {
@@ -30,7 +30,7 @@ const authHandler = (...userRoles: TUserRole[]) => {
 
         // check the user is user or admin
         if (userRoles && !userRoles.includes(role)) {
-            throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access!')
+            throw new AppError(httpStatus.UNAUTHORIZED, 'You have no access to this route!')
         }
 
         req.user = decoded
