@@ -14,8 +14,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 
+
 // global route
 app.use('/api', router);
+
+
+app.get('/', (req: Request, res: Response) => {
+    res.send('Server is running smoothly!')
+})
+
 
 // global error handler
 app.use(globalErrorHandler);
@@ -23,9 +30,5 @@ app.use(globalErrorHandler);
 // not found route
 app.use(notFound);
 
-
-app.get('/', (req: Request, res: Response) => {
-    res.send('Server is running smoothly! Please visit here.')
-})
 
 export default app;

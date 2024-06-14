@@ -9,13 +9,16 @@ import Booking from "./booking.model"
 
 const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
     // check the user is exists or not
-    const userData = await User.isUserExists(user?.email)
+    // const userData = await User.isUserExists(user?.email)
+    const userData = await User.findOne({ email: user?.email })
+
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
     }
 
+    console.log(userData);
     // set the user id to payload.user
-    payload.user = userData?._id as Types.ObjectId;
+    payload.user = userData?._id;
 
     // check the car exists or not
     const car = await Car.isCarExists(payload.car as string)
@@ -81,7 +84,8 @@ const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
 
 const getSpecificUsersBookingsFromDB = async (user: JwtPayload) => {
     // check the user is exists or not
-    const userData = await User.isUserExists(user?.email)
+    // const userData = await User.isUserExists(user?.email)
+    const userData = await User.findOne({ email: user?.email })
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
     }
