@@ -50,6 +50,13 @@ const deleteCarFromDB = async (id: string) => {
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
     }
 
+    // check the car status is available or not
+    if (car?.status === 'unavailable') {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Car is currently reserved and cannot be deleted!'
+        )
+    }
     // update car data
     const result = await Car.findByIdAndUpdate(
         id,
