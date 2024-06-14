@@ -6,6 +6,7 @@ import handleZodError from "../errors/handleZodError";
 import handleDuplicateError from "../errors/handleDuplicateError";
 import handleValidationError from "../errors/handleValidationError";
 import AppError from "../errors/AppError";
+import handleCastError from "../errors/handleCastError";
 
 const globalErrorHandler = (
     error: any,
@@ -57,6 +58,11 @@ const globalErrorHandler = (
                 message: error?.message,
             },
         ];
+    } else if (error.name === 'CastError') {
+        const simplifiedError = handleCastError(error);
+        statusCode = simplifiedError.statusCode;
+        message = simplifiedError.message;
+        errorSources = simplifiedError.errorSources;
     }
 
     return res.status(statusCode).json({

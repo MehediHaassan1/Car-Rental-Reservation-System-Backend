@@ -7,12 +7,7 @@ import { T_User_Roles } from "../user/user.constant";
 
 const router = Router();
 
-// return A Booked Car
-router.put(
-    '/return',
-    authHandler(T_User_Roles.ADMIN),
-    CarControllers.returnABookedCar
-)
+
 
 // Create a car
 router.post(
@@ -51,5 +46,11 @@ router.delete(
     CarControllers.deleteCar
 )
 
+// return A Booked Car
+router.put(
+    '/return',
+    authHandler(T_User_Roles.ADMIN),
+    CarControllers.returnABookedCar
+)
 
 export const CarRoutes = router;
