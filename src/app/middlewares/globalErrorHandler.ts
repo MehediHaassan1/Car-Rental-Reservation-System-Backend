@@ -48,6 +48,15 @@ const globalErrorHandler = (
                 message: error?.message,
             },
         ];
+    } else if (error.name === "TokenExpiredError") {
+        statusCode = 400;
+        message = 'Invalid token!';
+        errorSources = [
+            {
+                path: '',
+                message: error?.message,
+            },
+        ];
     }
 
     return res.status(statusCode).json({
