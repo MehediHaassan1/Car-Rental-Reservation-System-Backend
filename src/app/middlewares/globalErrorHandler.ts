@@ -7,6 +7,7 @@ import handleDuplicateError from "../errors/handleDuplicateError";
 import handleValidationError from "../errors/handleValidationError";
 import AppError from "../errors/AppError";
 import handleCastError from "../errors/handleCastError";
+import config from "../config";
 
 const globalErrorHandler = (
     error: any,
@@ -15,15 +16,15 @@ const globalErrorHandler = (
     next: NextFunction
 ) => {
 
+    let statusCode = 500;
+    let message = 'Something went wrong!'
+
     let errorSources: TErrorSources = [
         {
             path: '',
-            message: ''
+            message: 'Something went wrong!'
         }
     ]
-
-    let statusCode = 500;
-    let message = 'Something went wrong!'
 
     if (error instanceof ZodError) {
         const simplifiedError = handleZodError(error);
@@ -63,6 +64,14 @@ const globalErrorHandler = (
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSources;
+    } else if (error instanceof Error) {
+        message = error.message;
+        errorSources = [
+            {
+                path: '',
+                message: error?.message,
+            },
+        ];
     }
 
     return res.status(statusCode).json({
@@ -70,7 +79,7 @@ const globalErrorHandler = (
         message,
         errorSources,
         error,
-        // stack: error.stack
+        stack: config.NODE_ENV === 'development' ? error.stack : null
     })
 }
 
