@@ -25,7 +25,7 @@ app.use(notFound);
 
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Server is under development! Please visit us later.')
+    res.send('Server is running smoothly! Please visit here.')
 })
 
 export default app;
