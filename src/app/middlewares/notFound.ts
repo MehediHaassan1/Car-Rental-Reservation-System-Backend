@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 const notFound = (req: Request, res: Response, next: NextFunction) => {
     return res.status(httpStatus.NOT_FOUND).send({
         success: false,
-        message: 'Not Found from the main services!'
+        message: 'Not Found!'
     });
 };
 

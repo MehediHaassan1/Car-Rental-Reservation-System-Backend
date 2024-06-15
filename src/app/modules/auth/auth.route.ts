@@ -6,13 +6,15 @@ import { validateAuth } from "./auth.validation";
 
 const router = Router();
 
-
+// user or admin signup api endpoint
 router.post(
     '/signup',
     validateRequestHandler(validateUser.createUserValidationSchema),
     AuthControllers.signUp
 );
 
+
+// user or admin signin api endpoint
 router.post(
     '/signin',
     validateRequestHandler(validateAuth.signInValidationSchema),

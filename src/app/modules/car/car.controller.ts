@@ -3,7 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { CarServices } from "./car.service";
 
-
+// create a car
 const createCar = catchAsync(async (req, res) => {
     const result = await CarServices.createCarIntoDB(req.body);
     sendResponse(res, {
@@ -15,6 +15,7 @@ const createCar = catchAsync(async (req, res) => {
 })
 
 
+// get all cars
 const getAllCars = catchAsync(async (req, res) => {
     const result = await CarServices.getAllCarsFromDB();
 
@@ -34,6 +35,7 @@ const getAllCars = catchAsync(async (req, res) => {
 })
 
 
+// get single car
 const getSingleCar = catchAsync(async (req, res) => {
     const { id } = req.params;
     const result = await CarServices.getSingleCarFromDB(id);
@@ -53,6 +55,7 @@ const getSingleCar = catchAsync(async (req, res) => {
 });
 
 
+// update a car
 const updateCar = catchAsync(async (req, res) => {
     const { id } = req.params;
     const data = req.body;
@@ -66,6 +69,7 @@ const updateCar = catchAsync(async (req, res) => {
 })
 
 
+// delete a car
 const deleteCar = catchAsync(async (req, res) => {
     const { id } = req.params;
     const result = await CarServices.deleteCarFromDB(id);
@@ -85,7 +89,7 @@ const returnABookedCar = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Car booked successfully!",
+        message: "Car returned successfully!",
         data: result
     });
 })

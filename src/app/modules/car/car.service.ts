@@ -8,23 +8,26 @@ import Booking from "../booking/booking.model";
 import { calculateTotalCost, isEndTimeBigger } from "./car.utils";
 import mongoose from "mongoose";
 
+// create car
 const createCarIntoDB = async (payload: TCar) => {
     const result = await Car.create(payload);
     return result;
 }
 
+// get all cars
 const getAllCarsFromDB = async () => {
     const result = await Car.find();
     return result;
 }
 
-
+// get single car
 const getSingleCarFromDB = async (id: string) => {
     const result = await Car.findById(id);
     return result;
 }
 
 
+// update car data
 const updateCarIntoDB = async (id: string, payload: Partial<TCar>) => {
 
     // check the car exists or not
@@ -42,6 +45,7 @@ const updateCarIntoDB = async (id: string, payload: Partial<TCar>) => {
     return result;
 }
 
+// delete car
 const deleteCarFromDB = async (id: string) => {
 
     // check the car exists or not
@@ -67,12 +71,12 @@ const deleteCarFromDB = async (id: string) => {
 
 }
 
-
+// return car
 const returnABookedCar = async (
     user: JwtPayload,
     data: { bookingId: string, endTime: string }
 ) => {
-    // console.log(user, data)
+    
     // check the user exists or not
     const userData = await User.isUserExists(user?.email);
     if (!userData) {
@@ -138,8 +142,6 @@ const returnABookedCar = async (
         if (!updatedBookingData) {
             throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update data!')
         }
-
-
 
         await session.commitTransaction();
         await session.endSession();

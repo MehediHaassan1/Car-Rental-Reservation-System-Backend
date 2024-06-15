@@ -1,8 +1,6 @@
 import { Types } from "mongoose";
 import { z } from "zod";
 
-export const isBookedStatus = ['unconfirmed', 'confirmed'];
-
 export const objectIdSchema = z.string({ required_error: 'Object ID is required!' }).refine(
     id => Types.ObjectId.isValid(id),
     { message: "Invalid ID" }

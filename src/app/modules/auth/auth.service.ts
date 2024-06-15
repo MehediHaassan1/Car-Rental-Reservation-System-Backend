@@ -3,7 +3,6 @@ import AppError from "../../errors/AppError";
 import { TUser } from "../user/user.interface";
 import User from "../user/user.model";
 import { TSignIn } from "./auth.interface";
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from "../../config";
 import { createToken } from "./auth.utils";
 

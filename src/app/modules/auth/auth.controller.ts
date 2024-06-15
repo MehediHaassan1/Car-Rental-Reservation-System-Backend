@@ -4,6 +4,7 @@ import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import config from "../../config";
 
+// sign up user or admin
 const signUp = catchAsync(async (req, res) => {
     const result = await AuthServices.signUpUser(req.body);
     sendResponse(res, {
@@ -15,6 +16,7 @@ const signUp = catchAsync(async (req, res) => {
 })
 
 
+// sign in user or admin
 const signIn = catchAsync(async (req, res) => {
     const { user, accessToken, refreshToken } = await AuthServices.singInUser(req.body);
 
@@ -32,4 +34,7 @@ const signIn = catchAsync(async (req, res) => {
     })
 })
 
-export const AuthControllers = { signUp, signIn }
+export const AuthControllers = {
+    signUp,
+    signIn
+}

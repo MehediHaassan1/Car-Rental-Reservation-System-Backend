@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status";
 import { ZodError } from "zod";
 import { TErrorSources } from "../interface/error";
 import handleZodError from "../errors/handleZodError";
@@ -76,9 +75,10 @@ const globalErrorHandler = (
 
     return res.status(statusCode).json({
         success: false,
+        statusCode,
         message,
         errorSources,
-        error,
+        // error,
         stack: config.NODE_ENV === 'development' ? error.stack : null
     })
 }

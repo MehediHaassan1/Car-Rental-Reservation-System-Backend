@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { BookingServices } from "./booking.service";
 
+// book a car
 const bookACar = catchAsync(async (req, res) => {
     const user = req.user;
     const data = req.body;
@@ -15,7 +16,7 @@ const bookACar = catchAsync(async (req, res) => {
     })
 })
 
-
+// get all bookings
 const getAllBookings = catchAsync(async (req, res) => {
     const query = req.query;
     const result = await BookingServices.getAllBookingsFromDB(query);
@@ -35,22 +36,23 @@ const getAllBookings = catchAsync(async (req, res) => {
 })
 
 
+// get Users Specific Bookings
 const getSpecificUsersBookings = catchAsync(async (req, res) => {
     const user = req.user;
     const result = await BookingServices.getSpecificUsersBookingsFromDB(user)
     result.length < 1
-    ? sendResponse(res, {
-        success: false,
-        statusCode: httpStatus.NOT_FOUND,
-        message: "No Data Found!",
-        data: result
-    })
-    : sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "My Bookings retrieved successfully!",
-        data: result
-    })
+        ? sendResponse(res, {
+            success: false,
+            statusCode: httpStatus.NOT_FOUND,
+            message: "No Data Found!",
+            data: result
+        })
+        : sendResponse(res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: "My Bookings retrieved successfully!",
+            data: result
+        })
 })
 
 

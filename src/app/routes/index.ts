@@ -5,11 +5,13 @@ import { BookingRoutes } from "../modules/booking/booking.route";
 
 const router = Router();
 
-router.use('/auth', AuthRoutes)
+const routers = [
+    { path: '/auth', designation: AuthRoutes },
+    { path: '/cars', designation: CarRoutes },
+    { path: '/bookings', designation: BookingRoutes },
+]
 
-router.use('/cars', CarRoutes)
-
-router.use('/bookings', BookingRoutes)
+routers.forEach(route => router.use(route.path, route.designation))
 
 
 export default router;

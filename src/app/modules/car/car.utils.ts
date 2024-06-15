@@ -1,16 +1,18 @@
+// check the end time
 export const isEndTimeBigger = (startTime: string, endTime: string) => {
     const bookingStartTime = new Date(`2000-01-01T${startTime}`)
     const bookingEndTime = new Date(`2000-01-01T${endTime}`)
     return bookingEndTime > bookingStartTime;
 }
 
+// convert the minutes into hours
 const timeStringToHours = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     const minutesToHours = minutes / 60;
     return hours + minutesToHours;
 };
 
-
+// calculate total cost
 export const calculateTotalCost = (
     startTime: string,
     endTime: string,

@@ -41,10 +41,8 @@ const userSchema = new Schema<TUser, TUserModel>({
 
 // hashed the password field
 userSchema.pre('save', async function (next) {
-    const user = this;
-
-    user.password = await bcrypt.hash(
-        user.password,
+    this.password = await bcrypt.hash(
+        this.password,
         Number(config.bcrypt_salt_round)
     )
 

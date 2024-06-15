@@ -7,6 +7,7 @@ import { BookingControllers } from "./booking.controller";
 
 const router = Router();
 
+// create booking
 router.post(
     '/',
     authHandler(T_User_Roles.USER),

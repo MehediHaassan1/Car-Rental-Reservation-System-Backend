@@ -1,11 +1,13 @@
 import { TErrorResponse } from "../interface/error";
 
 const handleDuplicateError = (err: any): TErrorResponse => {
+    const match = err.message.match(/"([^"]*)"/);
+    const errMessage = match && match[1];
     const statusCode = 400;
     const message = 'A user with the provided email already exists!'
     const errorSources = [{
-        path: 'email',
-        message: 'Use another email!'
+        path: '',
+        message: `${errMessage} is already exists!`,
     }]
 
     return {
