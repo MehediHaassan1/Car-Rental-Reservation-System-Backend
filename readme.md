@@ -55,7 +55,7 @@ cp .env.example .env
 # Update .env file with your configuration
 
 # Start the project
-npm start
+npm run start:dev
 ```
 
 ### .env.example
