@@ -85,7 +85,7 @@ const deleteCarFromDB = async (id: string) => {
     }
 
     // check the car status is available or not
-    if (car?.status === 'unavailable') {
+    if (car?.isBooked === true) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             'Car is currently reserved and cannot be deleted!'
@@ -125,7 +125,7 @@ const returnABookedCar = async (
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
     }
 
-    const pricePerHour = carData?.pricePerHour
+    const pricePerHour = carData?.pricePerDay
 
     // check the booking data end time is null or not
     const bookingDataEndTime = bookingData?.dropOffTime;

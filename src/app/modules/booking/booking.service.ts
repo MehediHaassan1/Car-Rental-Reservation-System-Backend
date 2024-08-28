@@ -18,17 +18,17 @@ const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
 
     // set the user id to payload.user
     payload.user = userData?._id;
-    payload.car = payload.carId;
+    // payload.car = payload?.car;
 
+    console.log(payload)
     // check the car exists or not
     const car = await Car.findById(payload?.car)
     if (!car) {
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
     }
-
+    console.log(car)
     // check the car status
-    const carStatus = car.status;
-    if (carStatus === 'unavailable') {
+    if (car?.isBooked === true) {
         throw new AppError(httpStatus.CONFLICT, 'This car already has a reservation!')
     }
 
@@ -39,8 +39,8 @@ const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
 
         // update the car status
         await Car.findByIdAndUpdate(
-            payload.car,
-            { status: 'unavailable' },
+            payload?.car,
+            { isBooked: true },
             { new: true, session }
         )
 
@@ -55,6 +55,7 @@ const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
 
         return result;
     } catch (err: any) {
+        console.log(err)
         await session.abortTransaction()
         await session.endSession();
         throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!')

@@ -7,6 +7,8 @@ import { BookingServices } from "./booking.service";
 const bookACar = catchAsync(async (req, res) => {
     const user = req.user;
     const data = req.body;
+    console.log(data)
+    
     const result = await BookingServices.bookACar(user, data);
     sendResponse(res, {
         success: true,

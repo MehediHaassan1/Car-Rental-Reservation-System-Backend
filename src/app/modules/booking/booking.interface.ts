@@ -11,4 +11,7 @@ export interface TBooking {
     totalCost: number;
     isCanceled: boolean;
     status: 'pending' | 'ongoing' | 'complete';
+    identity: string;
+    identityNo: string;
+    drivingLicenseNo: string;
 }

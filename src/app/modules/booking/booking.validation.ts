@@ -1,17 +1,24 @@
 import { z } from 'zod';
-import { dateSchema, objectIdSchema, timeSchema } from './booking.constant';
 
-export const createBookingSchema = z.object({
+// Define the Zod schema for the Booking with validation
+const createBookingValidation = z.object({
     body: z.object({
-        date: dateSchema.transform((str) => new Date(str)),
-        carId: objectIdSchema,
-        startTime: timeSchema,
-        endTime: z.union([timeSchema, z.null()]).default(null),
-        totalCost: z.number().min(0).default(0),
+        user: z.string(),
+        car: z.string(),
+        location: z.string().nonempty("Location is required"),
+        pickUpDate: z.string(),
+        pickUpTime: z.string(),
+        dropOffDate: z.string(),
+        dropOffTime: z.string(),
+        isCanceled: z.boolean().default(false),
+        identity: z.string().nonempty("Identity type is required"),
+        identityNo: z.string().nonempty("Identity number is required"),
+        drivingLicenseNo: z.string().nonempty("Driving license number is required"),
     })
-});
+})
+
 
 
 export const validateBooking = {
-    createBookingSchema
+    createBookingValidation
 }

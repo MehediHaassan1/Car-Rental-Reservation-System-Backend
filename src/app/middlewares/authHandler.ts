@@ -18,7 +18,14 @@ const authHandler = (...userRoles: TUserRole[]) => {
 
 
         // verify the jwt
-        const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
+        // const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
+        let decoded;
+        try {
+            decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
+        } catch (error) {
+            throw new AppError(httpStatus.UNAUTHORIZED, "Jwt expired");
+        }
+
 
         const { email, role } = decoded;
 

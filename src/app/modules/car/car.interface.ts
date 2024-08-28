@@ -1,15 +1,34 @@
 import { Model } from "mongoose";
 
-export interface TCar {
+export type TCar = {
     name: string;
     description: string;
     color: string;
     isElectric: boolean;
     features: string[];
-    pricePerHour: number;
-    status: 'available' | 'unavailable';
-    isDeleted: boolean;
+    pricePerDay: number;
+    carImage: string;
+    isBooked: boolean;
+    location: string;
+    engine: string;
+    horsepower: string;
+    torque: string;
+    transmission: string;
+    drivetrain: string;
+    range: string;
+    topSpeed: string;
+    acceleration: string;
+    seatingCapacity: number;
+    cargoCapacity: string;
+    fuelEconomy: string;
+    seats: number;
+    ac: boolean;
+    luggage: number;
+    atxOrMtx: string;
+    doorCount: number;
+    carType: string;
 }
+
 
 export interface TSearchCriteria {
     location: string;

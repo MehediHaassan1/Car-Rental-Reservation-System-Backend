@@ -11,7 +11,7 @@ const router = Router();
 router.post(
     '/',
     authHandler(T_User_Roles.USER),
-    validateRequestHandler(validateBooking.createBookingSchema),
+    validateRequestHandler(validateBooking.createBookingValidation),
     BookingControllers.bookACar
 )
 
