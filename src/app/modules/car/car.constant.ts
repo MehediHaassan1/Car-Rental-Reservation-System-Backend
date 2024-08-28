@@ -1,1 +1,0 @@
-export const TCarStatus = ['available', 'unavailable'];

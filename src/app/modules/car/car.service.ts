@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TCar } from "./car.interface";
+import { TCar, TSearchCriteria } from "./car.interface";
 import Car from "./car.model";
 import { JwtPayload } from "jsonwebtoken";
 import User from "../user/user.model";
@@ -15,8 +15,38 @@ const createCarIntoDB = async (payload: TCar) => {
 }
 
 // get all cars
-const getAllCarsFromDB = async () => {
-    const result = await Car.find();
+const getAllCarsFromDB = async (name: string, carType: string, price: number, location: string) => {
+    let query: any = {}
+
+    if (name) {
+        const searchRegex = new RegExp(name, "i");
+        query = {
+            $or: [
+                { name: searchRegex },
+            ]
+        };
+    }
+    if (carType) {
+        const searchRegex = new RegExp(carType, "i");
+        query = {
+            $or: [
+                { carType: searchRegex },
+            ]
+        };
+    }
+    if (location) {
+        const searchRegex = new RegExp(location, "i");
+        query = {
+            $or: [
+                { location: searchRegex },
+            ]
+        };
+    }
+    if (price > 100) {
+        query.pricePerDay = { $lte: price };
+    }
+
+    const result = await Car.find(query);
     return result;
 }
 
@@ -76,7 +106,7 @@ const returnABookedCar = async (
     user: JwtPayload,
     data: { bookingId: string, endTime: string }
 ) => {
-    
+
     // check the user exists or not
     const userData = await User.isUserExists(user?.email);
     if (!userData) {
@@ -98,13 +128,13 @@ const returnABookedCar = async (
     const pricePerHour = carData?.pricePerHour
 
     // check the booking data end time is null or not
-    const bookingDataEndTime = bookingData?.endTime;
+    const bookingDataEndTime = bookingData?.dropOffTime;
     if (bookingDataEndTime !== null) {
         throw new AppError(httpStatus.BAD_REQUEST, 'This booking is already completed!')
     }
 
     // check the booking data start time is bigger than the booking data end time
-    const bookingDataStartTime = bookingData?.startTime;
+    const bookingDataStartTime = bookingData?.pickUpTime;
 
     if (!isEndTimeBigger(bookingDataStartTime, data.endTime)) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid end time!')
@@ -156,11 +186,48 @@ const returnABookedCar = async (
 
 }
 
+// search car
+const searchCarsFromDB = async ({ location,
+    pickUpDate,
+    pickUpTime,
+    dropOffDate,
+    dropOffTime, }: TSearchCriteria) => {
+    // Find all cars that match the location
+    const carsAtLocation = await Car.find({ location, isBooked: false });
+
+    // Find all bookings that overlap with the search criteria
+    const overlappingBookings = await Booking.find({
+        car: { $in: carsAtLocation.map(car => car._id) },
+        $or: [
+            {
+                startTime: { $lt: dropOffTime },
+                endTime: { $gte: pickUpTime },
+                date: { $gte: pickUpDate, $lte: dropOffDate },
+            },
+            {
+                startTime: { $gte: pickUpTime, $lt: dropOffTime },
+                endTime: { $gte: pickUpTime, $lt: dropOffTime },
+                date: { $gte: pickUpDate, $lte: dropOffDate },
+            },
+        ],
+    });
+
+    // Extract car IDs from overlapping bookings
+    const bookedCarIds = overlappingBookings.map((booking) => booking.car.toString());
+
+    // Find all cars that are not in the bookedCarIds list
+    const availableCars = carsAtLocation.filter((car) => !bookedCarIds.includes(car._id.toString()));
+
+    return availableCars;
+
+}
+
 export const CarServices = {
     createCarIntoDB,
     getAllCarsFromDB,
     getSingleCarFromDB,
     updateCarIntoDB,
     deleteCarFromDB,
-    returnABookedCar
+    returnABookedCar,
+    searchCarsFromDB,
 }

@@ -36,6 +36,12 @@ router.get(
 )
 
 
+// search cars
+router.post(
+    '/search-cars',
+    CarControllers.searchCars
+)
+
 // update car info
 router.put(
     '/:id',

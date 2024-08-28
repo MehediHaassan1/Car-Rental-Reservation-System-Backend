@@ -11,6 +11,14 @@ export interface TCar {
     isDeleted: boolean;
 }
 
+export interface TSearchCriteria {
+    location: string;
+    pickUpDate: string;
+    pickUpTime: string;
+    dropOffDate: string;
+    dropOffTime: string;
+}
+
 
 export interface CarModel extends Model<TCar> {
     isCarExists(id: string): Promise<TCar>

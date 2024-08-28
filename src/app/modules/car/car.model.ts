@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { CarModel, TCar } from "./car.interface";
-import { TCarStatus } from "./car.constant";
 
+// todo need to update car model
 const carSchema = new Schema<TCar, CarModel>({
     name: { type: String, required: true },
     description: { type: String, required: true },
@@ -9,12 +9,6 @@ const carSchema = new Schema<TCar, CarModel>({
     isElectric: { type: Boolean, required: true },
     features: { type: [String], required: true },
     pricePerHour: { type: Number, required: true },
-    status: {
-        type: String,
-        required: true,
-        enum: TCarStatus,
-        default: 'available'
-    },
     isDeleted: { type: Boolean, required: true, default: false }
 }, {
     timestamps: true

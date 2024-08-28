@@ -20,7 +20,8 @@ const userSchema = new Schema<TUser, TUserModel>({
     role: {
         type: String,
         enum: TUserRole,
-        required: true
+        required: true,
+        default: 'user'
     },
     password: {
         type: String,
@@ -28,10 +29,6 @@ const userSchema = new Schema<TUser, TUserModel>({
         select: 0
     },
     phone: {
-        type: String,
-        required: true
-    },
-    address: {
         type: String,
         required: true
     },

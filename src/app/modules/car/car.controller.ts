@@ -17,7 +17,10 @@ const createCar = catchAsync(async (req, res) => {
 
 // get all cars
 const getAllCars = catchAsync(async (req, res) => {
-    const result = await CarServices.getAllCarsFromDB();
+
+    const { name, carType, price, location } = req.query;
+
+    const result = await CarServices.getAllCarsFromDB(name as string, carType as string, parseInt(price as string), location as string);
 
     result.length < 1
         ? sendResponse(res, {
@@ -94,11 +97,24 @@ const returnABookedCar = catchAsync(async (req, res) => {
     });
 })
 
+
+// search car
+const searchCars = catchAsync(async (req, res) => {
+    const result = await CarServices.searchCarsFromDB(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Cars searched successfully!",
+        data: result
+    });
+})
+
 export const CarControllers = {
     createCar,
     getAllCars,
     getSingleCar,
     updateCar,
     deleteCar,
-    returnABookedCar
+    returnABookedCar,
+    searchCars,
 }
