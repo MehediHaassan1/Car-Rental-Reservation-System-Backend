@@ -9,9 +9,9 @@ export interface TBooking {
     dropOffDate: string;
     dropOffTime: string;
     totalCost: number;
-    isCanceled: boolean;
     status: 'pending' | 'ongoing' | 'complete';
     identity: string;
     identityNo: string;
     drivingLicenseNo: string;
+    isDeleted:boolean;
 }

@@ -11,15 +11,26 @@ const bookingSchema = new Schema<TBooking>({
     dropOffDate: { type: String, required: true },
     dropOffTime: { type: String, required: true },
     totalCost: { type: Number, default: 0 },
-    isCanceled: { type: Boolean, default: false },
     status: {
         type: String, enum: ['pending', 'ongoing', 'complete'], default: 'pending'
     },
     identity: { type: String, required: true },
     identityNo: { type: String, required: true },
-    drivingLicenseNo: { type: String, required: true }
+    drivingLicenseNo: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
 }, {
     timestamps: true
+});
+
+// Query Middleware
+bookingSchema.pre('find', function (next) {
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
+bookingSchema.pre('findOne', function (next) {
+    this.find({ isDeleted: { $ne: true } });
+    next();
 });
 
 const Booking = model<TBooking>('Booking', bookingSchema);

@@ -32,6 +32,16 @@ const userSchema = new Schema<TUser, TUserModel>({
         type: String,
         required: true
     },
+    address: {
+        type: String,
+    },
+    image: {
+        type: String,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    }
 }, {
     timestamps: true
 });

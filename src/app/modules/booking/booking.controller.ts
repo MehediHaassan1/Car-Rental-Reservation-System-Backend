@@ -8,12 +8,37 @@ const bookACar = catchAsync(async (req, res) => {
     const user = req.user;
     const data = req.body;
     console.log(data)
-    
+
     const result = await BookingServices.bookACar(user, data);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
         message: "Car booked successfully!",
+        data: result
+    })
+})
+
+const updateBooking = catchAsync(async (req, res) => {
+    const user = req.user;
+    const data = req.body;
+    const { id } = req.params;
+    const result = await BookingServices.updateBookingIntoDB(user, data, id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Booking updated successfully!",
+        data: result
+    })
+})
+
+const deleteBooking = catchAsync(async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await BookingServices.deleteBookingIntoDB(user, id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Booking deleted successfully!",
         data: result
     })
 })
@@ -58,8 +83,11 @@ const getSpecificUsersBookings = catchAsync(async (req, res) => {
 })
 
 
+
 export const BookingControllers = {
     bookACar,
+    updateBooking,
+    deleteBooking,
     getAllBookings,
     getSpecificUsersBookings
 }

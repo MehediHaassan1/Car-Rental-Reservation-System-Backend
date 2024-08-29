@@ -15,6 +15,19 @@ router.post(
     BookingControllers.bookACar
 )
 
+router.patch(
+    '/update-booking/:id',
+    authHandler(T_User_Roles.USER,T_User_Roles.ADMIN),
+    BookingControllers.updateBooking
+)
+
+
+router.delete(
+    '/delete-booking/:id',
+    authHandler(T_User_Roles.USER,T_User_Roles.ADMIN),
+    BookingControllers.deleteBooking
+)
+
 
 // get All Bookings
 router.get(
@@ -27,7 +40,7 @@ router.get(
 // get Specific Users Bookings
 router.get(
     '/my-bookings',
-    authHandler(T_User_Roles.USER),
+    authHandler(T_User_Roles.USER, T_User_Roles.ADMIN),
     BookingControllers.getSpecificUsersBookings
 );
 

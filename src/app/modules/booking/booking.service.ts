@@ -18,9 +18,8 @@ const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
 
     // set the user id to payload.user
     payload.user = userData?._id;
-    // payload.car = payload?.car;
 
-    console.log(payload)
+
     // check the car exists or not
     const car = await Car.findById(payload?.car)
     if (!car) {
@@ -62,6 +61,87 @@ const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
     }
 }
 
+//updateBooking
+const updateBookingIntoDB = async (user: JwtPayload, payload: Record<string, unknown>, id: string) => {
+    // check the user is exists or not
+    const userData = await User.findOne({ email: user?.email })
+
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    //  check the booking using booking id and user id
+    const isCarBooked = await Booking.findOne({ user: userData?._id, _id: id })
+    if (!isCarBooked) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
+    }
+
+    // if status is pending, user can update data
+    if (isCarBooked.status === 'pending') {
+        const updateBooking = await Booking.findOneAndUpdate({ _id: id }, payload, { new: true })
+        if (!updateBooking) {
+            throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
+        }
+        return updateBooking;
+    } else {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
+    }
+
+}
+const deleteBookingIntoDB = async (user: JwtPayload, id: string) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        // Check if the user exists
+        const userData = await User.findOne({ email: user?.email });
+        if (!userData) {
+            throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+        }
+
+        // Check if the booking exists and is associated with the user
+        const isCarBooked = await Booking.findOne({ user: userData?._id, _id: id });
+        if (!isCarBooked) {
+            throw new AppError(httpStatus.BAD_REQUEST, 'Bad request');
+        }
+
+        // Check if the booking is already marked as deleted
+        if (isCarBooked?.isDeleted === true) {
+            throw new AppError(httpStatus.NOT_FOUND, 'This booking is already deleted');
+        }
+
+        // Mark the booking as deleted
+        const deleteUserBooking = await Booking.findOneAndUpdate(
+            { _id: id },
+            { isDeleted: true },
+            { new: true, session }
+        );
+
+        if (!deleteUserBooking) {
+            throw new AppError(httpStatus.BAD_REQUEST, 'Bad request');
+        }
+
+        // Update the car's isBooked status to false
+        await Car.findByIdAndUpdate(
+            deleteUserBooking.car,
+            { isBooked: false },
+            { new: true, session }
+        );
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return deleteUserBooking;
+    } catch (err: any) {
+        console.log(err);
+        await session.abortTransaction();
+        await session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!');
+    }
+};
+
+
 
 // get all bookings
 const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
@@ -98,6 +178,8 @@ const getSpecificUsersBookingsFromDB = async (user: JwtPayload) => {
 
 export const BookingServices = {
     bookACar,
+    updateBookingIntoDB,
+    deleteBookingIntoDB,
     getAllBookingsFromDB,
     getSpecificUsersBookingsFromDB
 }
