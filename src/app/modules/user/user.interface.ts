@@ -7,8 +7,8 @@ export type TUser = {
     role: 'user' | 'admin';
     password: string;
     phone: string;
-    address?: string;
-    image?: string;
+    address: string;
+    image: string;
     isDeleted: boolean;
 }
 

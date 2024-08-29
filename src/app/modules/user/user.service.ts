@@ -2,11 +2,66 @@ import { JwtPayload } from "jsonwebtoken"
 import User from "./user.model"
 import AppError from "../../errors/AppError"
 import httpStatus from "http-status"
+import { TUser } from "./user.interface";
 
+const getAllUsersFromDB = async () => {
+  const result = await User.find();
+  return result;
+};
 
-const getSingleUserFromDB = async (userData: JwtPayload) => {
+const getSingleUserFromDB = async (id: string) => {
   // check the user is exists or not
-  const user = await User.findOne({ email: userData?.email })
+  const user = await User.findById(id)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  // check the user is deleted or blocked
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+  return user
+}
+
+const deleteUserFromDB = async (id: string) => {
+  // check the user is exists or not
+  const user = await User.findById(id)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  // check the user is deleted or blocked
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  const result = await User.findByIdAndUpdate(id, { isDeleted: true }, { new: true })
+  return result;
+}
+
+const makeAdminIntoDB = async (id: string) => {
+  // check the user is exists or not
+  const user = await User.findById(id)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  // check the user is deleted or blocked
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  const result = await User.findByIdAndUpdate(id, { role: 'admin' }, { new: true })
+  return result;
+}
+
+
+const getMeFromDB = async (userData: string) => {
+  // check the user is exists or not
+  const user = await User.findOne({ email: userData })
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found')
   }
@@ -21,9 +76,9 @@ const getSingleUserFromDB = async (userData: JwtPayload) => {
 
 }
 
-const updateUserIntoDB = async (userData: JwtPayload, payload: Record<string, unknown>) => {
+const updateUserIntoDB = async (userData: JwtPayload, payload: Partial<TUser>) => {
 
-  console.log({ userData, payload })
+  // console.log({ userData, payload })
   // check the user is exists or not
   const user = await User.findOne({ email: userData?.email })
   if (!user) {
@@ -48,6 +103,10 @@ const updateUserIntoDB = async (userData: JwtPayload, payload: Record<string, un
 
 
 export const UserServices = {
-  updateUserIntoDB,
+  getAllUsersFromDB,
   getSingleUserFromDB,
+  deleteUserFromDB,
+  makeAdminIntoDB,
+  updateUserIntoDB,
+  getMeFromDB,
 }

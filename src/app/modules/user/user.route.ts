@@ -10,7 +10,33 @@ const router = Router();
 router.get(
   '/me',
   authHandler(T_User_Roles.USER, T_User_Roles.ADMIN),
+  UserController.getMe
+)
+
+
+
+router.get(
+  '/',
+  authHandler(T_User_Roles.ADMIN),
+  UserController.getAllUsers
+)
+
+router.get(
+  '/:id',
+  authHandler(T_User_Roles.ADMIN),
   UserController.getSingleUser
+)
+
+router.delete(
+  '/delete-user/:id',
+  authHandler(T_User_Roles.ADMIN),
+  UserController.deleteUser
+)
+
+router.patch(
+  '/make-admin/:id',
+  authHandler(T_User_Roles.ADMIN),
+  UserController.makeAdmin
 )
 
 router.put(
@@ -19,5 +45,7 @@ router.put(
   validateRequestHandler(validateUser.updateUserValidation),
   UserController.updateUser
 )
+
+
 
 export const UserRoutes = router;

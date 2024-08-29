@@ -10,7 +10,7 @@ const app: Application = express()
 
 // parser
 app.use(cors({
-    origin: ['https://ride-ease-dusky.vercel.app','http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://ride-ease-dusky.vercel.app'],
     credentials: true,
 }));
 app.use(express.json());

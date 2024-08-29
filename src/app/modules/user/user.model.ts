@@ -65,6 +65,17 @@ userSchema.set('toJSON', {
     }
 });
 
+// Query Middleware
+userSchema.pre('find', function (next) {
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
+userSchema.pre('findOne', function (next) {
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
 
 userSchema.statics.isUserExists = async function (email) {
     const user = await User.findOne({ email }).select('+password');

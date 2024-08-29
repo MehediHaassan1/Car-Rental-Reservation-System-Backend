@@ -10,6 +10,7 @@ const signUpUser = async (payload: TUser) => {
 
     // check the user with same email is exists or not!
     const user = await User.isUserExists(payload?.email);
+    // user.role = 'user';
 
     if (user) {
         throw new AppError(httpStatus.CONFLICT, 'User already exists!')
@@ -29,7 +30,7 @@ const singInUser = async (payload: TSignIn) => {
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
     }
-
+    // console.log(user)
     // check the password is matched or not!
     if (! await User.isPasswordMatched(password, user?.password as string)) {
         throw new AppError(httpStatus.FORBIDDEN, 'Wrong password!')
@@ -45,6 +46,8 @@ const singInUser = async (payload: TSignIn) => {
         config.jwt_access_secret as string,
         config.jwt_access_secret_expires_in as string
     )
+
+    // console.log(accessToken)
 
     const refreshToken = createToken(
         jwtPayload,
