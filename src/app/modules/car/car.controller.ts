@@ -97,17 +97,24 @@ const returnABookedCar = catchAsync(async (req, res) => {
     });
 })
 
-
+interface TSearchCriteria {
+    carType?: string;
+    seats?: number;
+    features?: string; // Now only one feature can be selected
+}
 // search car
 const searchCars = catchAsync(async (req, res) => {
-    const result = await CarServices.searchCarsFromDB(req.body);
+    const { carType, features, seats }: TSearchCriteria = req.query;
+    console.log(carType, features, seats);
+
+    const result = await CarServices.searchCarsFromDB({ carType, features, seats });
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Cars searched successfully!",
         data: result
     });
-})
+});
 
 export const CarControllers = {
     createCar,

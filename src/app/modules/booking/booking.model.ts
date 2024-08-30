@@ -1,15 +1,13 @@
 import { Schema, model } from 'mongoose';
 import { TBooking } from './booking.interface';
+import moment from "moment";
 
 // Define the Mongoose schema for the Booking
 const bookingSchema = new Schema<TBooking>({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     car: { type: Schema.Types.ObjectId, ref: 'Car', required: true },
-    location: { type: String, required: true },
-    pickUpDate: { type: String, required: true },
-    pickUpTime: { type: String, required: true },
-    dropOffDate: { type: String, required: true },
-    dropOffTime: { type: String, required: true },
+    pickUpDate: { type: String, required: true, default: () => moment().format("DD-MM-YYYY") },
+    dropOffDate: { type: String, default: ""},
     totalCost: { type: Number, default: 0 },
     status: {
         type: String, enum: ['pending', 'ongoing', 'complete'], default: 'pending'

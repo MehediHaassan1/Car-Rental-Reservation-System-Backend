@@ -32,30 +32,38 @@ const deleteUserFromDB = async (id: string) => {
   }
 
   // check the user is deleted or blocked
+  let result;
   const isDeleted = user?.isDeleted;
   if (isDeleted) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+    result = await User.findByIdAndUpdate(id, { isDeleted: false }, { new: true })
+  } else {
+    result = await User.findByIdAndUpdate(id, { isDeleted: true }, { new: true })
   }
 
-  const result = await User.findByIdAndUpdate(id, { isDeleted: true }, { new: true })
   return result;
 }
 
-const makeAdminIntoDB = async (id: string) => {
-  // check the user is exists or not
-  const user = await User.findById(id)
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
-  }
+const makeAdminIntoDB = async (userData: JwtPayload, id: string) => {
+  const superUser = await User.findOne({ email: userData.email });
+  if (superUser?.role === 'admin') {
 
-  // check the user is deleted or blocked
-  const isDeleted = user?.isDeleted;
-  if (isDeleted) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
-  }
+    // check the user is exists or not
+    const user = await User.findById(id)
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+    }
 
-  const result = await User.findByIdAndUpdate(id, { role: 'admin' }, { new: true })
-  return result;
+    // check the user is deleted or blocked
+    const isDeleted = user?.isDeleted;
+    if (isDeleted) {
+      throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+    }
+
+    const result = await User.findByIdAndUpdate(id, { role: 'admin' }, { new: true })
+    return result;
+  } else {
+
+  }
 }
 
 
@@ -78,7 +86,6 @@ const getMeFromDB = async (userData: string) => {
 
 const updateUserIntoDB = async (userData: JwtPayload, payload: Partial<TUser>) => {
 
-  // console.log({ userData, payload })
   // check the user is exists or not
   const user = await User.findOne({ email: userData?.email })
   if (!user) {

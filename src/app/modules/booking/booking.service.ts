@@ -88,6 +88,7 @@ const updateBookingIntoDB = async (user: JwtPayload, payload: Record<string, unk
     }
 
 }
+
 const deleteBookingIntoDB = async (user: JwtPayload, id: string) => {
     const session = await mongoose.startSession();
 
@@ -100,10 +101,18 @@ const deleteBookingIntoDB = async (user: JwtPayload, id: string) => {
             throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
         }
 
-        // Check if the booking exists and is associated with the user
-        const isCarBooked = await Booking.findOne({ user: userData?._id, _id: id });
-        if (!isCarBooked) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'Bad request');
+        let isCarBooked;
+        if (userData?.role === 'user') {
+            // Check if the booking exists and is associated with the user
+            isCarBooked = await Booking.findOne({ user: userData?._id, _id: id });
+            if (!isCarBooked) {
+                throw new AppError(httpStatus.BAD_REQUEST, 'Bad request');
+            }
+        } else {
+            isCarBooked = await Booking.findOne({ _id: id });
+            if (!isCarBooked) {
+                throw new AppError(httpStatus.BAD_REQUEST, 'Bad request');
+            }
         }
 
         // Check if the booking is already marked as deleted
@@ -158,7 +167,6 @@ const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
     const result = await Booking.find(filter).populate('car').populate('user');
     return result;
 }
-
 
 // get single booking
 const getSpecificUsersBookingsFromDB = async (user: JwtPayload) => {

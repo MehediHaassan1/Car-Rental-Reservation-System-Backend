@@ -7,6 +7,12 @@ import { T_User_Roles } from "../user/user.constant";
 
 const router = Router();
 
+// get all cars
+router.get(
+    '/',
+    CarControllers.getAllCars
+)
+
 // return A Booked Car
 router.put(
     '/return',
@@ -23,11 +29,15 @@ router.post(
     CarControllers.createCar
 )
 
-// get all cars
+
+
+// search cars
 router.get(
-    '/',
-    CarControllers.getAllCars
+    '/search-cars',
+    authHandler(T_User_Roles.ADMIN, T_User_Roles.USER),
+    CarControllers.searchCars
 )
+
 
 // get single cars
 router.get(
@@ -36,11 +46,6 @@ router.get(
 )
 
 
-// search cars
-router.post(
-    '/search-cars',
-    CarControllers.searchCars
-)
 
 // update car info
 router.put(

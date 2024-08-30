@@ -7,11 +7,6 @@ import { UserController } from "./user.controller";
 
 const router = Router();
 
-router.get(
-  '/me',
-  authHandler(T_User_Roles.USER, T_User_Roles.ADMIN),
-  UserController.getMe
-)
 
 
 
@@ -20,6 +15,13 @@ router.get(
   authHandler(T_User_Roles.ADMIN),
   UserController.getAllUsers
 )
+
+router.get(
+  '/me',
+  authHandler(T_User_Roles.USER, T_User_Roles.ADMIN),
+  UserController.getMe
+)
+
 
 router.get(
   '/:id',

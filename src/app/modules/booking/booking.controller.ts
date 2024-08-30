@@ -2,6 +2,8 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { BookingServices } from "./booking.service";
+import AppError from "../../errors/AppError";
+import User from "../user/user.model";
 
 // book a car
 const bookACar = catchAsync(async (req, res) => {

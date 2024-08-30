@@ -40,7 +40,7 @@ const deleteUser = catchAsync(async (req, res) => {
 
 const makeAdmin = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await UserServices.makeAdminIntoDB(id);
+  const result = await UserServices.makeAdminIntoDB(req.user, id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

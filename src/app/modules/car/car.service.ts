@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TCar, TSearchCriteria } from "./car.interface";
+import { TCar } from "./car.interface";
 import Car from "./car.model";
 import { JwtPayload } from "jsonwebtoken";
 import User from "../user/user.model";
@@ -107,120 +107,36 @@ const returnABookedCar = async (
     data: { bookingId: string, endTime: string }
 ) => {
 
-    // check the user exists or not
-    const userData = await User.isUserExists(user?.email);
-    if (!userData) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
-    }
-
-    // check the booking is exists or not
-    const bookingData = await Booking.findById(data.bookingId);
-    if (!bookingData) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!')
-    }
-
-    // get the car data and price per hour
-    const carData = await Car.findById(bookingData?.car);
-    if (!carData) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
-    }
-
-    const pricePerHour = carData?.pricePerDay
-
-    // check the booking data end time is null or not
-    const bookingDataEndTime = bookingData?.dropOffTime;
-    if (bookingDataEndTime !== null) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'This booking is already completed!')
-    }
-
-    // check the booking data start time is bigger than the booking data end time
-    const bookingDataStartTime = bookingData?.pickUpTime;
-
-    if (!isEndTimeBigger(bookingDataStartTime, data.endTime)) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Invalid end time!')
-    }
-
-    // get the total cost
-    const totalCost = calculateTotalCost(bookingDataStartTime, data.endTime, pricePerHour)
-
-    const session = await mongoose.startSession();
-    try {
-        session.startTransaction();
-
-        // update car status
-        const updatedCarData = await Car.findByIdAndUpdate(
-            bookingData?.car,
-            { status: 'available' },
-            { new: true, session }
-        );
-        if (!updatedCarData) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update data!')
-        }
-
-        // find booking data and update
-        const updatedBookingData = await Booking.findByIdAndUpdate(
-            data.bookingId,
-            {
-                endTime: data.endTime,
-                totalCost: totalCost
-            },
-            { new: true, session }
-        )
-            .populate('car')
-            .populate('user');
-
-        if (!updatedBookingData) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update data!')
-        }
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        return updatedBookingData;
-
-    } catch (err: any) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!')
-    }
+    // 
+    return null;
 
 }
 
-// search car
-const searchCarsFromDB = async ({ location,
-    pickUpDate,
-    pickUpTime,
-    dropOffDate,
-    dropOffTime, }: TSearchCriteria) => {
-    // Find all cars that match the location
-    const carsAtLocation = await Car.find({ location, isBooked: false });
-
-    // Find all bookings that overlap with the search criteria
-    const overlappingBookings = await Booking.find({
-        car: { $in: carsAtLocation.map(car => car._id) },
-        $or: [
-            {
-                startTime: { $lt: dropOffTime },
-                endTime: { $gte: pickUpTime },
-                date: { $gte: pickUpDate, $lte: dropOffDate },
-            },
-            {
-                startTime: { $gte: pickUpTime, $lt: dropOffTime },
-                endTime: { $gte: pickUpTime, $lt: dropOffTime },
-                date: { $gte: pickUpDate, $lte: dropOffDate },
-            },
-        ],
-    });
-
-    // Extract car IDs from overlapping bookings
-    const bookedCarIds = overlappingBookings.map((booking) => booking.car.toString());
-
-    // Find all cars that are not in the bookedCarIds list
-    const availableCars = carsAtLocation.filter((car) => !bookedCarIds.includes(car._id.toString()));
-
-    return availableCars;
-
+interface TSearchCriteria {
+    carType?: string;
+    seats?: number;
+    features?: string; // Now only one feature can be selected
 }
+
+const searchCarsFromDB = async ({ carType, seats, features }: TSearchCriteria) => {
+ 
+    const query: any = { isBooked: false }; 
+
+    if (carType) {
+        query.carType = carType; 
+    }
+
+    if (seats) {
+        query.seats = seats; 
+    }
+
+    if (features) {
+        query.features = { $in: [features] }; 
+    }
+
+    const cars = await Car.find(query);
+    return cars;
+};
 
 export const CarServices = {
     createCarIntoDB,

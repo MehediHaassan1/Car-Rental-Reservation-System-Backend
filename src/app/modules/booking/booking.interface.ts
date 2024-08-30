@@ -5,9 +5,7 @@ export interface TBooking {
     car: Types.ObjectId;
     location: string;
     pickUpDate: string;
-    pickUpTime: string;
     dropOffDate: string;
-    dropOffTime: string;
     totalCost: number;
     status: 'pending' | 'ongoing' | 'complete';
     identity: string;

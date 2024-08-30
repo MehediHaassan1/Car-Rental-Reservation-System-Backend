@@ -11,7 +11,6 @@ const authHandler = (...userRoles: TUserRole[]) => {
         const authorization = req.headers.authorization
         const token = authorization?.split(' ')[1]
 
-        console.log(token);
 
         // check the access token is missing or not
         if (!token) {
@@ -30,7 +29,6 @@ const authHandler = (...userRoles: TUserRole[]) => {
 
 
         const { email, role } = decoded;
-        console.log(role)
 
         // check the user exists or not
         const existingUser = await User.isUserExists(email);
