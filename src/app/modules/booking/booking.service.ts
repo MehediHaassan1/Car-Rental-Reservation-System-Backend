@@ -5,6 +5,7 @@ import AppError from "../../errors/AppError"
 import mongoose from "mongoose"
 import Car from "../car/car.model"
 import Booking from "./booking.model"
+import { initializePayment } from "../payment/payment.utils"
 
 // book a car
 const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
@@ -184,10 +185,40 @@ const getSpecificUsersBookingsFromDB = async (user: JwtPayload) => {
     return result;
 }
 
+// updateBookingStatusIntoDB
+const updateBookingStatusIntoDB = async (user: JwtPayload, id: string) => {
+    // check the user is exists or not
+    const userData = await User.findOne({ email: user?.email })
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    //  check the booking using booking id and user id
+    const isCarBooked = await Booking.findOne({ _id: id })
+    if (!isCarBooked) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
+    }
+
+    const updateBookingStatus = await Booking.findOneAndUpdate(
+        { _id: isCarBooked._id },
+        { status: 'ongoing' },
+        { new: true }
+    )
+
+    return updateBookingStatus;
+}
+
+const updateBookingCompleteIntoDB = async (user: JwtPayload, id: string) => {
+    await initializePayment();
+
+}
+
 export const BookingServices = {
     bookACar,
     updateBookingIntoDB,
     deleteBookingIntoDB,
     getAllBookingsFromDB,
-    getSpecificUsersBookingsFromDB
+    getSpecificUsersBookingsFromDB,
+    updateBookingStatusIntoDB,
+    updateBookingCompleteIntoDB,
 }

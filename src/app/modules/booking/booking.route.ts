@@ -21,6 +21,18 @@ router.patch(
     BookingControllers.updateBooking
 )
 
+router.patch(
+    '/update-status/:id',
+    authHandler(T_User_Roles.ADMIN),
+    BookingControllers.updateBookingStatus
+)
+
+router.post(
+    '/booking-update-complete/:id',
+    authHandler(T_User_Roles.USER),
+BookingControllers.updateBookingComplete
+)
+
 
 router.delete(
     '/delete-booking/:id',

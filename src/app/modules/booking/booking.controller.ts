@@ -85,11 +85,40 @@ const getSpecificUsersBookings = catchAsync(async (req, res) => {
 })
 
 
+// update Booking Status
+const updateBookingStatus = catchAsync(async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await BookingServices.updateBookingStatusIntoDB(user, id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Booking status updated successfully!",
+        data: result
+    })
+})
+
+// update Booking Complete
+const updateBookingComplete = catchAsync(async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await BookingServices.updateBookingCompleteIntoDB(user, id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Booking status updated successfully!",
+        data: result
+    })
+})
+
+
 
 export const BookingControllers = {
     bookACar,
     updateBooking,
     deleteBooking,
     getAllBookings,
-    getSpecificUsersBookings
+    getSpecificUsersBookings,
+    updateBookingStatus,
+    updateBookingComplete,
 }
