@@ -4,7 +4,7 @@ import { TUser } from "../user/user.interface";
 import User from "../user/user.model";
 import { TSignIn } from "./auth.interface";
 import config from "../../config";
-import { createToken } from "./auth.utils";
+import { createToken, verifyToken } from "./auth.utils";
 
 const signUpUser = async (payload: TUser) => {
 
@@ -30,7 +30,11 @@ const singInUser = async (payload: TSignIn) => {
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
     }
-    // console.log(user)
+
+    if (user?.isDeleted) {
+        throw new AppError(httpStatus.BAD_GATEWAY, 'The user is blocked!')
+    }
+
     // check the password is matched or not!
     if (! await User.isPasswordMatched(password, user?.password as string)) {
         throw new AppError(httpStatus.FORBIDDEN, 'Wrong password!')
@@ -63,7 +67,39 @@ const singInUser = async (payload: TSignIn) => {
 }
 
 
+const refreshTokenFromClient = async (token: string) => {
+    const decoded = verifyToken(token, config.jwt_refresh_secret as string)
+    const { email, iag } = decoded;
+
+    // check the user;
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    const isDeleted = user?.isDeleted;
+    if (isDeleted) {
+        throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted!');
+    }
+
+    const jwtPayload = {
+        email: user.email,
+        role: user.role,
+    };
+
+    const accessToken = createToken(
+        jwtPayload,
+        config.jwt_access_secret as string,
+        config.jwt_access_secret_expires_in as string,
+    );
+
+    return {
+        accessToken,
+    };
+}
+
 export const AuthServices = {
     signUpUser,
-    singInUser
+    singInUser,
+    refreshTokenFromClient,
 }
