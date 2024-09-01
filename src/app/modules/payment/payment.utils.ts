@@ -1,34 +1,57 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-export const initializePayment = async () => {
-
+import config from '../../config';
+import { TUserPaymentInfo } from '../booking/booking.interface';
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
 
 
-  const response = await axios.post("https://sandbox.aamarpay.com/jsonpost.php", {
-    store_id: "aamarpaytest",
-    signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
-    tran_id: "acfedf123123173",
-    success_url: "http://www.merchantdomain.com/sucesspage.html",
-    fail_url: "http://www.merchantdomain.com/failedpage.html",
-    cancel_url: "http://www.merchantdomain.com/cancellpage.html", 
-    amount: "10.0",
-    currency: "BDT",
-    desc: "Merchant Registration Payment",
-    cus_name: "Name",
-    cus_email: "payer@merchantcusomter.com",
-    cus_add1: "House B-158 Road 22",
-    cus_add2: "Mohakhali DOHS",
-    cus_city: "Dhaka",
-    cus_state: "Dhaka",
-    cus_postcode: "1206",
-    cus_country: "Bangladesh",
-    cus_phone: "+8801704",
-    type: "json"
-  });
+export const initializePayment = async (userPaymentInfo: TUserPaymentInfo) => {
 
-  console.log(response);
-  console.log("config.store_id ----> ", process.env.STORE_ID)
+  const { totalCost, dropOffDate, bookingId, trxID } = userPaymentInfo;
+  try {
+    const response = await axios.post(config.payment_url!, {
+      store_id: config.store_id,
+      signature_key: config.signature_key,
+      tran_id: userPaymentInfo.trxID,
+      success_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&dropOffDate=${dropOffDate}&totalCost=${totalCost}&trxID=${trxID}&status=success`,
+      fail_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&status=failed`,
+      cancel_url: "http://localhost:5173/",
+      amount: userPaymentInfo.totalCost,
+      currency: "BDT",
+      desc: "Merchant Registration Payment",
+      cus_name: userPaymentInfo.name,
+      cus_email: userPaymentInfo.email,
+      cus_add1: userPaymentInfo.address || "N/A",
+      cus_add2: "N/A",
+      cus_city: "N/A",
+      cus_state: "N/A",
+      cus_postcode: "N/A",
+      cus_country: "N/A",
+      cus_phone: userPaymentInfo.phone,
+      type: "json"
+    });
+
+    return response.data;
+  } catch (err) {
+    throw new AppError(httpStatus.BAD_GATEWAY, 'Failed to pay')
+  }
+
+}
+
+export const verifyPayment = async (trxID: string) => {
+  try {
+    const response = await axios.get(config.payment_verify_url!, {
+      params: {
+        store_id: config.store_id,
+        signature_key: config.signature_key,
+        type: "json",
+        request_id: trxID
+      }
+    });
+
+    return response.data;
+  }
+  catch (err) {
+    throw new Error("Payment validation failed!")
+  }
 }

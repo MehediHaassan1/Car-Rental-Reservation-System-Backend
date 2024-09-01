@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Status</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #fff;
+      padding: 50px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .check-image {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <img id="check-image" src="" alt="" class="check-image">
+    <div id="title" class="title"></div>
+    <div id="subtitle" class="subtitle"></div>
+  </div>
+  <script>
+    // Dynamic values
+    const paymentStatus = '{{paymentStatus}}';
+    const color = paymentStatus === 'success' ? '#4CAF50' : '#F44336';
+    const imageSrc = paymentStatus === 'success' ? 'https://i.ibb.co/Ksbkcvd/check-payment.png' : 'https://i.ibb.co/9bKrbhq/failed.png';
+    const title = paymentStatus === 'success' ? 'Payment Confirmed' : 'Payment Failed';
+    const subtitle = paymentStatus === 'success' ? 'Thank you for your payment!' : 'There was an issue with your payment. Please try again.';
+
+    document.getElementById('check-image').src = imageSrc;
+    document.getElementById('check-image').alt = title;
+    document.getElementById('title').textContent = title;
+    document.getElementById('title').style.color = color;
+    document.getElementById('subtitle').textContent = subtitle;
+
+    // Redirect to the home page after 5 seconds
+    setTimeout(() => {
+      window.location.href = "http://localhost:5173/";
+    }, 3000);
+  </script>
+</body>
+
+</html>

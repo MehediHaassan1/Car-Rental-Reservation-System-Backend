@@ -11,5 +11,17 @@ export interface TBooking {
     identity: string;
     identityNo: string;
     drivingLicenseNo: string;
-    isDeleted:boolean;
+    isDeleted: boolean;
+}
+
+
+export type TUserPaymentInfo = {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    totalCost: number;
+    trxID: string;
+    bookingId: Types.ObjectId;
+    dropOffDate: string;
 }

@@ -6,6 +6,7 @@ import mongoose from "mongoose"
 import Car from "../car/car.model"
 import Booking from "./booking.model"
 import { initializePayment } from "../payment/payment.utils"
+import moment from "moment";
 
 // book a car
 const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
@@ -209,7 +210,49 @@ const updateBookingStatusIntoDB = async (user: JwtPayload, id: string) => {
 }
 
 const updateBookingCompleteIntoDB = async (user: JwtPayload, id: string) => {
-    await initializePayment();
+
+    // check the user is exists or not
+    const userData = await User.findOne({ email: user?.email })
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    //  check the booking using booking id and user id
+    const isCarBooked = await Booking.findOne({ _id: id })
+    if (!isCarBooked) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
+    }
+
+    // find the car
+    const car = await Car.findById(isCarBooked.car)
+    if (!car) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
+    }
+
+    // calculating totalCost
+    const perDayCharged = car.pricePerDay
+    const carPickUpDate = moment(isCarBooked.pickUpDate, "DD-MM-YYYY")
+    const carDropOffDate = moment();
+
+    const rentalDays = carDropOffDate.diff(carPickUpDate, "days") + 1;
+    const totalCost = rentalDays * perDayCharged;
+    const formattedDropOffDate = carDropOffDate.format("DD-MM-YYYY");
+
+    const userPaymentInfo = {
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        address: userData.address,
+        trxID: `TrxID${Math.floor(Math.random() * 10000)}${userData.name.slice(0, 3)}`,
+        totalCost,
+        bookingId: isCarBooked?._id,
+        dropOffDate: formattedDropOffDate,
+    }
+
+
+    const paymentResponse = await initializePayment(userPaymentInfo);
+
+    return paymentResponse;
 
 }
 
