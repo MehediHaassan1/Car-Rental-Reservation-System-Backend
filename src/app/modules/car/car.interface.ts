@@ -6,7 +6,7 @@ export type TCar = {
     color: string;
     isElectric: boolean;
     features: string[];
-    pricePerDay: number;
+    pricePerHour: number;
     carImage: string;
     isBooked: boolean;
     location: string;
@@ -27,15 +27,14 @@ export type TCar = {
     atxOrMtx: string;
     doorCount: number;
     carType: string;
+    isDeleted: boolean;
 }
 
 
 export interface TSearchCriteria {
-    location: string;
-    pickUpDate: string;
-    pickUpTime: string;
-    dropOffDate: string;
-    dropOffTime: string;
+    carType?: string;
+    seats?: number;
+    features?: string; // Now only one feature can be selected
 }
 
 

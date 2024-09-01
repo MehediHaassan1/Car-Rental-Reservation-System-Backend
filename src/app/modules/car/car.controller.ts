@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { CarServices } from "./car.service";
+import { TSearchCriteria } from "./car.interface";
 
 // create a car
 const createCar = catchAsync(async (req, res) => {
@@ -86,9 +87,9 @@ const deleteCar = catchAsync(async (req, res) => {
 
 
 const returnABookedCar = catchAsync(async (req, res) => {
+    const { id } = req.params;
     const user = req.user;
-    const data = req.body;
-    const result = await CarServices.returnABookedCar(user, data);
+    const result = await CarServices.returnABookedCar(user, id);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -97,11 +98,7 @@ const returnABookedCar = catchAsync(async (req, res) => {
     });
 })
 
-interface TSearchCriteria {
-    carType?: string;
-    seats?: number;
-    features?: string; // Now only one feature can be selected
-}
+
 // search car
 const searchCars = catchAsync(async (req, res) => {
     const { carType, features, seats }: TSearchCriteria = req.query;

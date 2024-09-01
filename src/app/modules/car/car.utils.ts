@@ -1,32 +1,35 @@
-// check the end time
-export const isEndTimeBigger = (startTime: string, endTime: string) => {
-    const bookingStartTime = new Date(`2000-01-01T${startTime}`)
-    const bookingEndTime = new Date(`2000-01-01T${endTime}`)
-    return bookingEndTime > bookingStartTime;
-}
+import moment from 'moment';
 
-// convert the minutes into hours
-const timeStringToHours = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    const minutesToHours = minutes / 60;
-    return hours + minutesToHours;
-};
-
-// calculate total cost
 export const calculateTotalCost = (
-    startTime: string,
-    endTime: string,
-    pricePerHour: number
-): number => {
-    // get time
-    const startHours = timeStringToHours(startTime);
-    const endHours = timeStringToHours(endTime);
+    pickUpDate: string,
+    pickUpTime: string,
+    pricePerHour: number = 55
+) => {
+    const pickUpDateTime = moment(`${pickUpDate} ${pickUpTime}`, "DD-MM-YYYY HH:mm");
+    const dropOffDateTime = moment();
 
-    // get time duration
-    const timeDuration = endHours - startHours;
+    const duration = moment.duration(dropOffDateTime.diff(pickUpDateTime));
+    const hours = duration.hours();
+    const minutes = duration.minutes();
 
-    // get the total cost
-    const totalCost = timeDuration * pricePerHour;
+    let totalCost = 0;
 
-    return totalCost;
+    // Calculate cost based on minutes of the first hour
+    if (minutes > 0 && minutes <= 30) {
+        totalCost += pricePerHour / 2;
+    } else if (minutes > 30 && minutes <= 60) {
+        totalCost += pricePerHour;
+    }
+
+    // Add full cost for the remaining hours
+    totalCost += hours * pricePerHour;
+
+    const dropOffDate = dropOffDateTime.format("DD-MM-YYYY");
+    const dropOffTime = dropOffDateTime.format("HH:mm");
+
+    return {
+        totalCost,
+        dropOffDate,
+        dropOffTime,
+    };
 };

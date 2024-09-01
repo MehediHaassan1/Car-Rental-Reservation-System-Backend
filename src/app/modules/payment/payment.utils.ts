@@ -6,14 +6,13 @@ import AppError from '../../errors/AppError';
 
 
 export const initializePayment = async (userPaymentInfo: TUserPaymentInfo) => {
-
-  const { totalCost, dropOffDate, bookingId, trxID } = userPaymentInfo;
+  const { bookingId, trxID } = userPaymentInfo;
   try {
     const response = await axios.post(config.payment_url!, {
       store_id: config.store_id,
       signature_key: config.signature_key,
       tran_id: userPaymentInfo.trxID,
-      success_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&dropOffDate=${dropOffDate}&totalCost=${totalCost}&trxID=${trxID}&status=success`,
+      success_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&trxID=${trxID}&status=success`,
       fail_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&status=failed`,
       cancel_url: "http://localhost:5173/",
       amount: userPaymentInfo.totalCost,

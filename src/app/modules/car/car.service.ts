@@ -1,12 +1,12 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TCar } from "./car.interface";
+import { TCar, TSearchCriteria } from "./car.interface";
 import Car from "./car.model";
 import { JwtPayload } from "jsonwebtoken";
 import User from "../user/user.model";
 import Booking from "../booking/booking.model";
-import { calculateTotalCost, isEndTimeBigger } from "./car.utils";
 import mongoose from "mongoose";
+import { calculateTotalCost } from "./car.utils";
 
 // create car
 const createCarIntoDB = async (payload: TCar) => {
@@ -43,7 +43,7 @@ const getAllCarsFromDB = async (name: string, carType: string, price: number, lo
         };
     }
     if (price > 100) {
-        query.pricePerDay = { $lte: price };
+        query.pricePerHour = { $lte: price };
     }
 
     const result = await Car.find(query);
@@ -102,36 +102,84 @@ const deleteCarFromDB = async (id: string) => {
 }
 
 // return car
-const returnABookedCar = async (
-    user: JwtPayload,
-    data: { bookingId: string, endTime: string }
-) => {
+const returnABookedCar = async (userData: JwtPayload, id: string) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    // 
-    return null;
+    try {
+        const user = await User.findOne({ email: userData.email }).session(session);
+        if (!user) {
+            throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
+        }
 
-}
+        if (user.role !== 'admin') {
+            throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized access!');
+        }
 
-interface TSearchCriteria {
-    carType?: string;
-    seats?: number;
-    features?: string; // Now only one feature can be selected
-}
+        const booking = await Booking.findById(id).session(session);
+        if (!booking) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!');
+        }
+
+        const car = await Car.findById(booking.car).session(session);
+        if (!car) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Car not found!');
+        }
+
+        const { pickUpDate, pickUpTime } = booking;
+        const hourlyRate = car.pricePerHour;
+
+        const {
+            totalCost,
+            dropOffDate,
+            dropOffTime,
+        } = calculateTotalCost(pickUpDate, pickUpTime, hourlyRate);
+
+        // Update booking with the total cost, drop-off date, drop-off time, and status
+        booking.totalCost = totalCost;
+        booking.dropOffDate = dropOffDate;
+        booking.dropOffTime = dropOffTime;
+        booking.status = 'complete';
+        booking.returned = true;
+        await booking.save({ session });
+
+        // Update car's isBooked status
+        car.isBooked = false;
+        await car.save({ session });
+
+        // Re-query the booking with populated fields
+        const populatedBooking = await Booking.findById(id)
+            .populate('car')
+            .populate('user')
+            .session(session);
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return populatedBooking;
+    } catch (err: any) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error(err);
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!');
+    }
+};
+
 
 const searchCarsFromDB = async ({ carType, seats, features }: TSearchCriteria) => {
- 
-    const query: any = { isBooked: false }; 
+
+    const query: any = { isBooked: false };
 
     if (carType) {
-        query.carType = carType; 
+        query.carType = carType;
     }
 
     if (seats) {
-        query.seats = seats; 
+        query.seats = seats;
     }
 
     if (features) {
-        query.features = { $in: [features] }; 
+        query.features = { $in: [features] };
     }
 
     const cars = await Car.find(query);

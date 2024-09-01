@@ -9,7 +9,6 @@ import User from "../user/user.model";
 const bookACar = catchAsync(async (req, res) => {
     const user = req.user;
     const data = req.body;
-    console.log(data)
 
     const result = await BookingServices.bookACar(user, data);
     sendResponse(res, {
@@ -106,7 +105,7 @@ const updateBookingComplete = catchAsync(async (req, res) => {
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Booking status updated successfully!",
+        message: "Booking payment successfully!",
         data: result
     })
 })

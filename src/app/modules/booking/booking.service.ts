@@ -10,58 +10,67 @@ import moment from "moment";
 
 // book a car
 const bookACar = async (user: JwtPayload, payload: Record<string, unknown>) => {
-
-    // check the user is exists or not
-    const userData = await User.findOne({ email: user?.email })
+    const userData = await User.findOne({ email: user?.email });
 
     if (!userData) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
     }
 
-    // set the user id to payload.user
     payload.user = userData?._id;
 
+    const now = moment();
+    const minutes = now.minutes();
 
-    // check the car exists or not
-    const car = await Car.findById(payload?.car)
+    let pickUpTime: moment.Moment;
+
+    if (minutes <= 30) {
+        pickUpTime = now.minutes(30).seconds(0);
+    } else {
+        pickUpTime = now.add(1, 'hours').minutes(0).seconds(0);
+    }
+
+    if (pickUpTime.hour() === 0 && pickUpTime.minutes() === 0) {
+        payload.pickUpDate = now.add(1, 'days').format("DD-MM-YYYY");
+    } else {
+        payload.pickUpDate = now.format("DD-MM-YYYY");
+    }
+
+    payload.pickUpTime = pickUpTime.format("HH:mm");
+
+    const car = await Car.findById(payload?.car);
     if (!car) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
-    }
-    console.log(car)
-    // check the car status
-    if (car?.isBooked === true) {
-        throw new AppError(httpStatus.CONFLICT, 'This car already has a reservation!')
+        throw new AppError(httpStatus.NOT_FOUND, 'Car not found!');
     }
 
-    // add transaction rollback
+    if (car?.isBooked === true) {
+        throw new AppError(httpStatus.CONFLICT, 'This car already has a reservation!');
+    }
+
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
 
-        // update the car status
         await Car.findByIdAndUpdate(
             payload?.car,
             { isBooked: true },
             { new: true, session }
-        )
+        );
 
-        // create bookings
-        const bookingData = await Booking.create([payload], { new: true, session })
+        const bookingData = await Booking.create([payload], { session });
         const result = bookingData[0];
 
         await (await result.populate('user')).populate('car');
 
         await session.commitTransaction();
-        await session.endSession();
+        session.endSession();
 
         return result;
     } catch (err: any) {
-        console.log(err)
-        await session.abortTransaction()
-        await session.endSession();
-        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!')
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, 'Bad request!');
     }
-}
+};
 
 //updateBooking
 const updateBookingIntoDB = async (user: JwtPayload, payload: Record<string, unknown>, id: string) => {
@@ -218,25 +227,16 @@ const updateBookingCompleteIntoDB = async (user: JwtPayload, id: string) => {
     }
 
     //  check the booking using booking id and user id
-    const isCarBooked = await Booking.findOne({ _id: id })
-    if (!isCarBooked) {
+    const booking = await Booking.findOne({ _id: id })
+    if (!booking) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Bad request')
     }
 
     // find the car
-    const car = await Car.findById(isCarBooked.car)
+    const car = await Car.findById(booking.car)
     if (!car) {
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
     }
-
-    // calculating totalCost
-    const perDayCharged = car.pricePerDay
-    const carPickUpDate = moment(isCarBooked.pickUpDate, "DD-MM-YYYY")
-    const carDropOffDate = moment();
-
-    const rentalDays = carDropOffDate.diff(carPickUpDate, "days") + 1;
-    const totalCost = rentalDays * perDayCharged;
-    const formattedDropOffDate = carDropOffDate.format("DD-MM-YYYY");
 
     const userPaymentInfo = {
         name: userData.name,
@@ -244,9 +244,8 @@ const updateBookingCompleteIntoDB = async (user: JwtPayload, id: string) => {
         phone: userData.phone,
         address: userData.address,
         trxID: `TrxID${Math.floor(Math.random() * 10000)}${userData.name.slice(0, 3)}`,
-        totalCost,
-        bookingId: isCarBooked?._id,
-        dropOffDate: formattedDropOffDate,
+        totalCost:booking.totalCost,
+        bookingId: booking?._id,
     }
 
 

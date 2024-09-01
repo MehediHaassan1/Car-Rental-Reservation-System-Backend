@@ -15,7 +15,7 @@ router.get(
 
 // return A Booked Car
 router.put(
-    '/return',
+    '/return-car/:id',
     authHandler(T_User_Roles.ADMIN),
     CarControllers.returnABookedCar
 )

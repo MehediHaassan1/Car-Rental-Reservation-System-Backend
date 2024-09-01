@@ -28,7 +28,7 @@ const generatePaymentHTML = (paymentStatus: string): string => {
     .replace('{{subtitle}}', subtitle);
 };
 
-const confirmPaymentIntoDB = async (booking: string, dropOffDate: string, totalCost: string, trxID: string, status: string) => {
+const confirmPaymentIntoDB = async (booking: string, trxID: string, status: string) => {
   const verifyResponse = await verifyPayment(trxID!);
 
   const bookedCar = await Booking.findById(booking);
@@ -36,17 +36,16 @@ const confirmPaymentIntoDB = async (booking: string, dropOffDate: string, totalC
     throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
   }
 
-  await Car.findByIdAndUpdate(bookedCar.car, { isBooked: false }, { new: true });
 
   let result;
   if (verifyResponse && verifyResponse.pay_status === "Successful") {
     result = await Booking.findOneAndUpdate(
       { _id: booking },
-      { dropOffDate: dropOffDate, totalCost: totalCost, status: 'complete' },
+      { paid: true },
       { new: true }
     );
   }
-
+  console.log(result);
   // Generate HTML based on the status
   const paymentStatus = status === "success" && result ? 'success' : 'failed';
   const htmlContent = generatePaymentHTML(paymentStatus);
