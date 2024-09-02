@@ -42,7 +42,7 @@ const getAllCarsFromDB = async (name: string, carType: string, price: number, lo
             ]
         };
     }
-    if (price > 100) {
+    if (price > 0) {
         query.pricePerHour = { $lte: price };
     }
 

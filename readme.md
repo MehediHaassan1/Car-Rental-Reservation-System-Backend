@@ -1,6 +1,6 @@
 # Car Rental Reservation System
 
-This car rental reservation system is designed to manage the booking and rental process of vehicle. Customer can book a car for their needs without having to worry about the cost of the reservation. They can book a reservation as their own ability. The system helps your company to operate more efficiently, reduce manual errors, and provide a better overall experience for their customers.
+Our Car Rental Reservation System streamlines the entire vehicle booking and rental process, allowing customers to easily reserve cars tailored to their needs. With our intuitive and user-friendly interface, customers can book a vehicle without any hassle, ensuring a seamless experience from start to finish.
 
 ## Table of Contents
 

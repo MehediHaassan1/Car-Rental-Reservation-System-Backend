@@ -10,7 +10,7 @@ const routers = [
     { path: '/auth', designation: AuthRoutes },
     { path: '/cars', designation: CarRoutes },
     { path: '/bookings', designation: BookingRoutes },
-    { path: '/users', designation: UserRoutes}
+    { path: '/users', designation: UserRoutes},
 ]
 
 routers.forEach(route => router.use(route.path, route.designation))

@@ -14,7 +14,7 @@ export const initializePayment = async (userPaymentInfo: TUserPaymentInfo) => {
       tran_id: userPaymentInfo.trxID,
       success_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&trxID=${trxID}&status=success`,
       fail_url: `https://car-rental-reservation-system-backend.vercel.app/payment-verify?booking=${bookingId}&status=failed`,
-      cancel_url: "http://localhost:5173/",
+      cancel_url: "https://ride-ease-dusky.vercel.app",
       amount: userPaymentInfo.totalCost,
       currency: "BDT",
       desc: "Merchant Registration Payment",
