@@ -58,12 +58,22 @@ const getSingleCarFromDB = async (id: string) => {
 
 
 // update car data
-const updateCarIntoDB = async (id: string, payload: Partial<TCar>) => {
+const updateCarIntoDB = async (email: string, id: string, payload: Partial<TCar>) => {
 
     // check the car exists or not
     const car = await Car.isCarExists(id)
     if (!car) {
         throw new AppError(httpStatus.NOT_FOUND, 'Car not found!')
+    }
+
+    // check the user is admin
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found!')
+    }
+
+    if (user?.role !== 'admin') {
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access')
     }
 
     // update car data
@@ -94,14 +104,11 @@ const deleteCarFromDB = async (id: string, isDeleted: boolean) => {
     }
 
     const newIsDeleted = !isDeleted;
-    console.log(newIsDeleted)
-    // update car data
     const result = await Car.findByIdAndUpdate(
         id,
         { isDeleted: newIsDeleted },
         { new: true }
     )
-    console.log(result)
     return result;
 
 }

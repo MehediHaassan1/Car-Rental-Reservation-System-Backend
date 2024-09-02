@@ -41,7 +41,6 @@ const updateCarSchema = z.object({
         pricePerHour: z.number().optional(),
         carImage: z.string().optional(),
         isBooked: z.boolean().optional(),
-        location: z.string().optional(),
         engine: z.string().optional(),
         horsepower: z.string().optional(),
         torque: z.string().optional(),
