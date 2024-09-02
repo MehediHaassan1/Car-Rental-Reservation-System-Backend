@@ -6,11 +6,10 @@ const createCarSchema = z.object({
         description: z.string().nonempty("Description is required"),
         color: z.string().nonempty("Color is required"),
         isElectric: z.boolean(),
-        features: z.array(z.string()).default([]),
+        features: z.array(z.string({ required_error: 'Feature is required' })),
         pricePerHour: z.number().positive("Price per day must be a positive number"),
         carImage: z.string().url("Car image must be a valid URL"),
-        isBooked: z.boolean(),
-        location: z.string().nonempty("Location is required"),
+        isBooked: z.boolean().default(false),
         engine: z.string().nonempty("Engine is required"),
         horsepower: z.string().nonempty("Horsepower is required"),
         torque: z.string().nonempty("Torque is required"),
@@ -28,6 +27,7 @@ const createCarSchema = z.object({
         atxOrMtx: z.string().nonempty("Transmission type (ATX or MTX) is required"),
         doorCount: z.number().positive("Door count must be a positive number"),
         carType: z.string().nonempty("Car type is required"),
+        isDeleted: z.boolean().default(false),
     })
 });
 

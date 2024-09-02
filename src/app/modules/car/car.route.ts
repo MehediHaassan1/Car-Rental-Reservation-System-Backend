@@ -57,8 +57,8 @@ router.put(
 
 
 // Delete car
-router.delete(
-    '/:id',
+router.put(
+    '/delete-car/:id',
     authHandler(T_User_Roles.ADMIN),
     CarControllers.deleteCar
 )

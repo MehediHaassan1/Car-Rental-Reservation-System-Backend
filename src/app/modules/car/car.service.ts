@@ -76,7 +76,8 @@ const updateCarIntoDB = async (id: string, payload: Partial<TCar>) => {
 }
 
 // delete car
-const deleteCarFromDB = async (id: string) => {
+const deleteCarFromDB = async (id: string, isDeleted: boolean) => {
+    console.log(id, isDeleted);
 
     // check the car exists or not
     const car = await Car.isCarExists(id)
@@ -91,12 +92,16 @@ const deleteCarFromDB = async (id: string) => {
             'Car is currently reserved and cannot be deleted!'
         )
     }
+
+    const newIsDeleted = !isDeleted;
+    console.log(newIsDeleted)
     // update car data
     const result = await Car.findByIdAndUpdate(
         id,
-        { isDeleted: true },
+        { isDeleted: newIsDeleted },
         { new: true }
     )
+    console.log(result)
     return result;
 
 }

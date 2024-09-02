@@ -10,8 +10,7 @@ const carSchema = new Schema<TCar>({
     features: { type: [String], default: [] },
     pricePerHour: { type: Number, required: true },
     carImage: { type: String, required: true },
-    isBooked: { type: Boolean, required: true },
-    location: { type: String, required: true },
+    isBooked: { type: Boolean, default: false },
     engine: { type: String, required: true },
     horsepower: { type: String, required: true },
     torque: { type: String, required: true },
@@ -28,20 +27,9 @@ const carSchema = new Schema<TCar>({
     luggage: { type: Number, required: true },
     atxOrMtx: { type: String, required: true },
     doorCount: { type: Number, required: true },
-    carType: { type: String, required: true }
+    carType: { type: String, required: true },
+    isDeleted: {type: Boolean, default: false},
 });
-
-// find all cars those are not deleted
-carSchema.pre('find', async function (next) {
-    this.find({ isDeleted: { $ne: true } })
-    next();
-})
-
-// find single car that is not deleted
-carSchema.pre('findOne', async function (next) {
-    this.findOne({ isDeleted: { $ne: true } })
-    next();
-})
 
 // find the car exists or not
 carSchema.statics.isCarExists = async function (id: string) {
