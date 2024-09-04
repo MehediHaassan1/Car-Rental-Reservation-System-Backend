@@ -15,30 +15,14 @@ const createCarIntoDB = async (payload: TCar) => {
 }
 
 // get all cars
-const getAllCarsFromDB = async (name: string, carType: string, price: number, location: string) => {
+const getAllCarsFromDB = async (carType: string, price: number,) => {
     let query: any = {}
 
-    if (name) {
-        const searchRegex = new RegExp(name, "i");
-        query = {
-            $or: [
-                { name: searchRegex },
-            ]
-        };
-    }
     if (carType) {
         const searchRegex = new RegExp(carType, "i");
         query = {
             $or: [
                 { carType: searchRegex },
-            ]
-        };
-    }
-    if (location) {
-        const searchRegex = new RegExp(location, "i");
-        query = {
-            $or: [
-                { location: searchRegex },
             ]
         };
     }

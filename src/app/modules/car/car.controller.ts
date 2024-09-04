@@ -19,9 +19,9 @@ const createCar = catchAsync(async (req, res) => {
 // get all cars
 const getAllCars = catchAsync(async (req, res) => {
 
-    const { name, carType, price, location } = req.query;
+    const { carType, price } = req.query;
 
-    const result = await CarServices.getAllCarsFromDB(name as string, carType as string, parseInt(price as string), location as string);
+    const result = await CarServices.getAllCarsFromDB( carType as string, parseInt(price as string));
 
     result.length < 1
         ? sendResponse(res, {
