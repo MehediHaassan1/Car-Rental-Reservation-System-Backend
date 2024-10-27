@@ -10,7 +10,7 @@ const router = Router();
 // create booking
 router.post(
     '/',
-    authHandler(T_User_Roles.USER),
+    authHandler(T_User_Roles.USER, T_User_Roles.ADMIN),
     validateRequestHandler(validateBooking.createBookingValidation),
     BookingControllers.bookACar
 )

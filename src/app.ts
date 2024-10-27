@@ -16,6 +16,7 @@ app.use(cors({
     origin: ['http://localhost:5173', 'https://ride-ease-dusky.vercel.app'],
     credentials: true,
 }));
+// app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 

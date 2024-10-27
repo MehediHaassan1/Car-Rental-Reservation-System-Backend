@@ -15,8 +15,8 @@ const createCarIntoDB = async (payload: TCar) => {
 }
 
 // get all cars
-const getAllCarsFromDB = async (carType: string, price: number,) => {
-    let query: any = {}
+const getAllCarsFromDB = async (carType: string, price: number, page: number, limit: number) => {
+    let query: any = {};
 
     if (carType) {
         const searchRegex = new RegExp(carType, "i");
@@ -30,9 +30,16 @@ const getAllCarsFromDB = async (carType: string, price: number,) => {
         query.pricePerHour = { $lte: price };
     }
 
-    const result = await Car.find(query);
-    return result;
-}
+    const skip = (page - 1) * limit;
+    
+    const [result, totalCars] = await Promise.all([
+        Car.find(query).skip(skip).limit(limit),
+        Car.countDocuments(query)
+    ]);
+
+    return { result, totalCars };
+};
+
 
 // get single car
 const getSingleCarFromDB = async (id: string) => {

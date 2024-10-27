@@ -18,25 +18,40 @@ const createCar = catchAsync(async (req, res) => {
 
 // get all cars
 const getAllCars = catchAsync(async (req, res) => {
-
     const { carType, price } = req.query;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 9;
 
-    const result = await CarServices.getAllCarsFromDB( carType as string, parseInt(price as string));
+    const { result, totalCars } = await CarServices.getAllCarsFromDB(
+        carType as string,
+        parseInt(price as string),
+        page,
+        limit
+    );
 
     result.length < 1
         ? sendResponse(res, {
             statusCode: httpStatus.NOT_FOUND,
             success: false,
             message: "No Data Found!",
-            data: result
+            data: result,
         })
         : sendResponse(res, {
             statusCode: httpStatus.OK,
             success: true,
             message: "Cars retrieved successfully!",
-            data: result
-        })
-})
+            data: {
+                cars: result,
+                pagination: {
+                    totalCars,
+                    totalPages: Math.ceil(totalCars / limit),
+                    currentPage: page,
+                    limit,
+                },
+            },
+        });
+});
+
 
 
 // get single car
