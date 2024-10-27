@@ -15,7 +15,8 @@ const getAdminStatistics = catchAsync(async (req, res) => {
 })
 
 const getUserStatistics = catchAsync(async (req, res) => {
-  const result = await StatisticsService.getUserStatisticsFromDB();
+  const email = req.user.email
+  const result = await StatisticsService.getUserStatisticsFromDB(email);
   
   sendResponse(res, {
     statusCode: httpStatus.OK,
